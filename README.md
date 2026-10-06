@@ -1,0 +1,1 @@
+# mnu-academic-integrity
