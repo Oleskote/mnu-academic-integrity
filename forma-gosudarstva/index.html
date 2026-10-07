@@ -1,0 +1,1373 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Лаборатория формы государства</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: «кабинет конституционалиста» — схема государства в центре, маршрут справа, последствия и таблица ниже */
+:root{
+  --bg:#EEF1F6; --surface:#FFFFFF; --surface-2:#E5EAF2; --ink:#121A2C; --muted:#4F5A73; --line:#CCD4E1;
+  --accent:#1E3E8C; --accent-soft:#DDE6F8; --accent-ink:#FFFFFF;
+  --gov:#2B52B0; --ter:#0B7564; --reg:#8C3560;
+  --ok:#13703F; --ok-soft:#DDF1E5; --bad:#B0261B; --bad-soft:#FBE3E0; --warn:#8F5300; --warn-soft:#FBEBD0; --lock:#5E6479; --lock-soft:#E7E9F0;
+  --f-display:"Unbounded","Manrope",system-ui,sans-serif;
+  --f-ui:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-text:"Literata",Georgia,"Times New Roman",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E131E; --surface:#161D2B; --surface-2:#1E2738; --ink:#E6EBF4; --muted:#A0ABC2; --line:#2E3A50;
+  --accent:#93B2FF; --accent-soft:#1F2C4C; --accent-ink:#0E131E;
+  --gov:#93B2FF; --ter:#5FD3BE; --reg:#EE9CC3;
+  --ok:#62D596; --ok-soft:#133022; --bad:#FF8E80; --bad-soft:#3B1B18; --warn:#F3BA5A; --warn-soft:#352812; --lock:#98A0B6; --lock-soft:#232B3B;
+  color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0E131E; --surface:#161D2B; --surface-2:#1E2738; --ink:#E6EBF4; --muted:#A0ABC2; --line:#2E3A50;
+  --accent:#93B2FF; --accent-soft:#1F2C4C; --accent-ink:#0E131E;
+  --gov:#93B2FF; --ter:#5FD3BE; --reg:#EE9CC3;
+  --ok:#62D596; --ok-soft:#133022; --bad:#FF8E80; --bad-soft:#3B1B18; --warn:#F3BA5A; --warn-soft:#352812; --lock:#98A0B6; --lock-soft:#232B3B;
+  color-scheme:dark; }
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-ui)}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:14px 48px}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.eyebrow{font:500 11px/1.3 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding-block:6px 14px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.brand h1{font:700 clamp(26px,4vw,38px)/1.05 var(--f-display);letter-spacing:-.01em}
+.brand p{margin-top:6px;color:var(--muted);max-width:60ch}
+.modes{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;font-weight:600;cursor:pointer;min-height:42px}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tab:hover{border-color:var(--accent)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h2{font:700 17px/1.25 var(--f-display);letter-spacing:-.005em}
+.card h3{font:700 15px/1.3 var(--f-ui)}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:12px}
+.stack{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+
+/* lab layout */
+.lab-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+.lab-main{display:grid;gap:16px;min-width:0}
+.lab-side{position:sticky;top:12px;min-width:0;max-height:calc(100vh - 24px);overflow-y:auto;border-radius:var(--r)}
+@media (max-width:1020px){.lab-grid{grid-template-columns:minmax(0,1fr)}.lab-side{position:static;order:-1;max-height:none;overflow:visible}}
+
+.ctrl-groups{display:grid;gap:14px}
+.ctrl{display:grid;gap:6px}
+.ctrl-label{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}
+.dot{width:10px;height:10px;border-radius:3px;flex:none}
+.dot.gov{background:var(--gov)}.dot.ter{background:var(--ter)}.dot.reg{background:var(--reg)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.opt{position:relative;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer;font-weight:600;font-size:14px;text-align:left;transition:background .15s,border-color .15s}
+.opt:hover{border-color:var(--accent)}
+.opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt.locked{background:repeating-linear-gradient(135deg,var(--lock-soft) 0 6px,var(--surface) 6px 12px);color:var(--lock);border-style:dashed;cursor:not-allowed}
+.opt.locked::before{content:"🔒\FE0E";margin-right:6px;font-size:12px}
+.opt.flag::after{content:"";position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.ctrl-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;padding-top:4px;border-top:1px dashed var(--line);margin-top:2px;padding-block-start:12px}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:40px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.restart{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.restart .confirm{display:none;gap:6px;align-items:center}
+.restart.asking .confirm{display:inline-flex}
+.restart.asking .ask{display:none}
+
+/* viz */
+.viz{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.panel{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;min-width:0;display:grid;gap:8px;align-content:start}
+.panel.wide{grid-column:1/-1}
+.panel figcaption{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.panel figcaption .muted{font-weight:500}
+.panel svg{width:100%;height:auto;display:block}
+@media (max-width:700px){.viz{grid-template-columns:minmax(0,1fr)}}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:22px;height:0;border-top:2px solid var(--ink);vertical-align:middle;margin-right:5px}
+.legend i.dash{border-top-style:dashed}.legend i.dot2{border-top-style:dotted}.legend i.grey{border-color:var(--lock)}
+
+svg .node rect{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .node.k-gov rect{stroke:var(--gov)}
+svg .node.k-ter rect{stroke:var(--ter)}
+svg .node.hi rect{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.5}
+svg .node.dim rect{stroke-dasharray:4 3;fill:var(--surface)}
+svg .node.alert rect{stroke:var(--bad);stroke-width:2.5}
+svg .n-t{font:700 13px var(--f-ui);fill:var(--ink)}
+svg .n-s{font:500 10px var(--f-ui);fill:var(--muted)}
+svg .lbl{font:600 11px var(--f-ui);fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}
+svg .lbl.m{fill:var(--muted);font-weight:500}
+svg .edge{fill:none;stroke:var(--ink);stroke-width:1.8}
+svg .edge.weak{stroke:var(--lock);stroke-dasharray:3 4}
+svg .edge.e-dem{stroke:var(--ok);stroke-width:2.4}
+svg .edge.e-hybrid{stroke:var(--warn);stroke-dasharray:7 4;stroke-width:2.2}
+svg .edge.e-auth{stroke:var(--bad);stroke-dasharray:2 4;stroke-width:2.2}
+svg .edge.e-tot{stroke:var(--lock);stroke-dasharray:1 5;stroke-width:2}
+svg .edge.main{stroke:var(--gov);stroke-width:2.2}
+svg .edge.ter{stroke:var(--ter);stroke-width:2}
+svg .edge.treaty{stroke:var(--ter);stroke-dasharray:6 4;stroke-width:1.8}
+svg .ah{fill:var(--ink)}
+svg .bg{fill:var(--surface)}
+.fresh{animation:pulse .9s ease-out}
+@keyframes pulse{0%{opacity:.25}100%{opacity:1}}
+
+/* regime panel */
+.reg-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+@media (max-width:700px){.reg-grid{grid-template-columns:minmax(0,1fr)}}
+.bars{display:grid;gap:7px}
+.bar{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px;align-items:center;font-size:13px}
+.bar .track{height:18px;border-radius:5px;background:var(--surface-2);position:relative;overflow:hidden;border:1px solid var(--line)}
+.bar .fill{position:absolute;inset:0 auto 0 0;background:var(--reg);border-radius:4px;transition:width .45s ease}
+.bar .val{position:absolute;right:4px;top:2px;line-height:12px;padding:0 4px;border-radius:3px;background:var(--surface);font:500 11px var(--f-mono);color:var(--ink)}
+.chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.chip{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;line-height:1.3;background:var(--surface-2)}
+.chip b{display:block;font:500 10.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.chip.good{border-color:var(--ok);background:var(--ok-soft)}
+.chip.mid{border-color:var(--warn);background:var(--warn-soft)}
+.chip.badc{border-color:var(--bad);background:var(--bad-soft)}
+
+/* status pills */
+.pill{display:inline-flex;align-items:center;gap:6px;font:700 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:6px;border:1.5px solid currentColor;white-space:nowrap}
+.pill.ok{color:var(--ok);background:var(--ok-soft)}
+.pill.bad{color:var(--bad);background:var(--bad-soft)}
+.pill.warn{color:var(--warn);background:var(--warn-soft)}
+.pill.lock{color:var(--lock);background:var(--lock-soft)}
+.pill.info{color:var(--accent);background:var(--accent-soft)}
+
+/* effects */
+.effects{display:grid;gap:10px}
+.fx{border-left:4px solid var(--accent);background:var(--surface-2);border-radius:0 8px 8px 0;padding:10px 12px;display:grid;gap:6px}
+.fx.bad{border-color:var(--bad);background:var(--bad-soft)}
+.fx.warn{border-color:var(--warn);background:var(--warn-soft)}
+.fx.ok{border-color:var(--ok);background:var(--ok-soft)}
+.fx ul{margin:0;padding-left:18px;display:grid;gap:3px}
+.fx .why{font-size:14px}
+
+/* table */
+.tbl-wrap{overflow-x:auto}
+table.props{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+.props th,.props td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.props thead th{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.props td.k{font-weight:600;width:28%}
+.props tr.grp td{background:var(--surface-2);font:700 12px var(--f-ui);padding-block:6px}
+.props td.diff{color:var(--warn);font-weight:600}
+.props td.chg{background:var(--accent-soft);transition:background 1.4s}
+
+/* route */
+.route{display:grid;gap:12px}
+.steps{display:flex;flex-wrap:wrap;gap:5px}
+.stepchip{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);font:600 13px var(--f-mono);cursor:pointer}
+.stepchip.done{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.stepchip.cur{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.stepchip.lockd{color:var(--lock);border-style:dashed;cursor:not-allowed}
+.task{display:grid;gap:10px}
+.task .stage{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.task h3{font:700 16px/1.3 var(--f-display)}
+.casebox{font:15px/1.6 var(--f-text);background:var(--surface-2);border-radius:8px;padding:12px;border:1px solid var(--line)}
+.req{display:flex;gap:8px;align-items:flex-start;font-size:13.5px}
+.answers{display:grid;gap:6px}
+.ans{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 12px;text-align:left;cursor:pointer;font-size:14px;line-height:1.4}
+.ans:hover{border-color:var(--accent)}
+.ans.picked-ok{border-color:var(--ok);background:var(--ok-soft)}
+.ans.picked-bad{border-color:var(--bad);background:var(--bad-soft)}
+.ans[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.review{display:grid;gap:8px}
+.rv{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:4px;font-size:14px}
+.rv.ok{border-color:var(--ok)}.rv.bad{border-color:var(--bad)}.rv.warn{border-color:var(--warn)}
+.rv-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-weight:700}
+
+/* training */
+.opt.hit{box-shadow:inset 0 0 0 2px var(--ok)}
+.opt.miss{outline:2px dashed var(--bad);outline-offset:-2px}
+.opt.extra{box-shadow:inset 0 0 0 2px var(--bad)}
+.subtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.subtab{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:left;min-height:44px}
+.subtab b{display:block;font-weight:700}
+.subtab span{font-size:12.5px;color:var(--muted)}
+.subtab[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.trainer-head{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:center;margin-bottom:12px}
+.progress{display:flex;flex-wrap:wrap;gap:5px}
+.pdot{width:32px;height:32px;border-radius:7px;border:1px solid var(--line);background:var(--surface);font:600 12.5px var(--f-mono);cursor:pointer}
+.pdot.cur{outline:2px solid var(--accent);outline-offset:1px}
+.pdot.s-ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.pdot.s-warn{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.pdot.s-bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.t-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.t-grid{grid-template-columns:minmax(0,1fr)}}
+.para{font:17px/1.95 var(--f-text);max-width:68ch}
+.para h3{font:700 15px var(--f-ui);margin-bottom:8px}
+.gap{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.gap input{width:9.5em;max-width:60vw;border:none;border-bottom:2px solid var(--accent);background:var(--accent-soft);border-radius:4px 4px 0 0;padding:1px 6px;font:600 16px var(--f-text);min-height:32px}
+.gap.s-ok input{border-color:var(--ok);background:var(--ok-soft)}
+.gap.s-part input{border-color:var(--warn);background:var(--warn-soft)}
+.gap.s-bad input,.gap.s-empty input{border-color:var(--bad);background:var(--bad-soft)}
+.gap .gn{font:700 10px var(--f-mono);color:var(--muted)}
+.gap .hint{font:600 11px var(--f-ui);color:var(--accent);background:var(--surface-2);border-radius:4px;padding:1px 5px;white-space:nowrap}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.fb-list{display:grid;gap:8px}
+.fb{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:5px;font-size:14px;background:var(--surface)}
+.fb.ok{border-color:var(--ok)}.fb.bad{border-color:var(--bad)}.fb.warn{border-color:var(--warn)}
+.fb-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-weight:700}
+.fb dl{margin:0;display:grid;gap:3px}
+.fb dt{font:500 10.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fb dd{margin:0 0 4px}
+.cheat{display:grid;gap:6px;font-size:13.5px}
+.cheat div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px;border-bottom:1px dashed var(--line);padding-bottom:5px}
+@media (max-width:480px){.cheat div{grid-template-columns:minmax(0,1fr);gap:0}}
+.typebadge{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
+.typebadge .pill{font-size:13px;padding:7px 10px}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);padding:10px 12px;font:16px/1.6 var(--f-text);resize:vertical}
+textarea:focus{border-color:var(--accent)}
+.live{display:flex;flex-wrap:wrap;gap:6px;font-size:13px}
+.livechip{border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:var(--surface-2)}
+.livechip.ok{border-color:var(--ok);background:var(--ok-soft)}
+.livechip.bad{border-color:var(--bad);background:var(--bad-soft)}
+.livechip.warn{border-color:var(--warn);background:var(--warn-soft)}
+.thesis{font:600 18px/1.5 var(--f-text);border-left:4px solid var(--accent);padding:6px 0 6px 12px}
+.sentmap{display:grid;gap:6px}
+.sent{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:start;font-size:13.5px}
+.sent .no{font:700 12px var(--f-mono);width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--line)}
+.sent.th .no{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sent .txt{overflow-wrap:anywhere}
+.meter{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;max-width:260px}
+.meter span{height:10px;border-radius:3px;background:var(--surface-2);border:1px solid var(--line)}
+.meter span.on{background:var(--accent);border-color:var(--accent)}
+.meter span.zone{box-shadow:inset 0 -3px 0 var(--ok)}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface-2)}
+.kpi b{display:block;font:700 24px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:var(--muted)}
+details summary{cursor:pointer;font-weight:700;min-height:40px;display:flex;align-items:center}
+.mt8{margin-top:8px}.mt12{margin-top:12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand">
+    <div class="eyebrow">Теория государства · Тема 4 · Форма государства</div>
+    <h1>Лаборатория формы государства</h1>
+    <p>Меняйте форму правления, территориальное устройство и политический режим модельного государства, наблюдайте последствия и проверяйте себя на кейсах.</p>
+  </div>
+  <nav class="modes" role="tablist" aria-label="Режим работы">
+    <button class="tab" role="tab" id="tab-lab" aria-controls="lab" aria-selected="true">Лаборатория</button>
+    <button class="tab" role="tab" id="tab-train" aria-controls="train" aria-selected="false">Тренировка</button>
+  </nav>
+</header>
+
+<main>
+<!-- ============ ЛАБОРАТОРИЯ ============ -->
+<section id="lab" role="tabpanel" aria-labelledby="tab-lab">
+  <div class="lab-grid">
+    <div class="lab-main">
+      <div class="card">
+        <div class="sec-head">
+          <h2>Модельное государство N</h2>
+          <span class="muted small">Нажмите на значение — схемы, таблица и последствия перестроятся</span>
+        </div>
+        <div class="ctrl-groups">
+          <div class="ctrl" role="group" aria-labelledby="lb-gov">
+            <div class="ctrl-label" id="lb-gov"><span class="dot gov"></span><span id="gov-title">Форма правления · кто и как правит</span></div>
+            <div class="seg" id="seg-gov"></div>
+          </div>
+          <div class="ctrl" role="group" aria-labelledby="lb-ter">
+            <div class="ctrl-label" id="lb-ter"><span class="dot ter"></span>Территориальное устройство · как распределены полномочия</div>
+            <div class="seg" id="seg-ter"></div>
+          </div>
+          <div class="ctrl" role="group" aria-labelledby="lb-reg">
+            <div class="ctrl-label" id="lb-reg"><span class="dot reg"></span>Политический режим · какими методами осуществляется власть</div>
+            <div class="seg" id="seg-reg"></div>
+          </div>
+          <div class="ctrl-foot">
+            <span class="small muted"><span class="pill lock" style="padding:3px 6px">замок</span> — сочетание невозможно, нажмите, чтобы узнать почему · <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--warn)"></span> — нетипичное сочетание</span>
+            <div class="restart" data-reset="lab">
+              <button class="btn ask" type="button">Начать заново</button>
+              <span class="confirm"><span class="small">Сбросить модель и маршрут?</span><button class="btn danger yes" type="button">Да, сбросить</button><button class="btn ghost no" type="button">Отмена</button></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="viz">
+        <figure class="panel">
+          <figcaption><span class="dot gov"></span>Кто правит <span class="muted" id="cap-gov"></span></figcaption>
+          <svg id="svg-gov" viewBox="0 0 300 250" role="img" aria-labelledby="svg-gov-t"><title id="svg-gov-t">Схема формы правления</title></svg>
+          <div class="legend" id="legend-gov"></div>
+        </figure>
+        <figure class="panel">
+          <figcaption><span class="dot ter"></span>Как устроена территория <span class="muted" id="cap-ter"></span></figcaption>
+          <svg id="svg-ter" viewBox="0 0 300 250" role="img" aria-labelledby="svg-ter-t"><title id="svg-ter-t">Схема территориального устройства</title></svg>
+          <div class="legend" id="legend-ter"></div>
+        </figure>
+        <figure class="panel wide">
+          <figcaption><span class="dot reg"></span>Как осуществляется власть <span class="muted" id="cap-reg"></span></figcaption>
+          <div class="reg-grid">
+            <div><div class="eyebrow" style="margin-bottom:6px">Контроль государства над сферами жизни</div><div class="bars" id="bars"></div></div>
+            <div><div class="eyebrow" style="margin-bottom:6px">Как работают институты на практике</div><div class="chips" id="chips"></div></div>
+          </div>
+        </figure>
+      </div>
+    </div>
+
+    <aside class="lab-side">
+      <div class="card route" id="route" aria-live="polite"></div>
+    </aside>
+  </div>
+
+  <div class="stack mt12">
+    <section class="card" aria-labelledby="fx-h">
+      <div class="sec-head"><h2 id="fx-h">Что изменилось и почему</h2><span class="muted small">изменил условие → изменился результат → изменились допустимые действия</span></div>
+      <div class="effects" id="effects" aria-live="polite"></div>
+    </section>
+
+    <section class="card" aria-labelledby="tb-h">
+      <div class="sec-head"><h2 id="tb-h">Конституция и практика</h2><span class="muted small">Форма правления и устройство задают левую колонку, режим — правую. Расхождение подсвечено.</span></div>
+      <div class="tbl-wrap"><table class="props" id="props"><thead><tr><th>Признак</th><th>По конституции</th><th>На практике</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+  </div>
+</section>
+
+<!-- ============ ТРЕНИРОВКА ============ -->
+<section id="train" role="tabpanel" aria-labelledby="tab-train" hidden>
+  <div class="subtabs" role="tablist" aria-label="Задания">
+    <button class="subtab" role="tab" id="st-1" aria-controls="t1" aria-selected="true"><b>1 · Определи форму государства</b><span>10 кейсов без подсказок</span></button>
+    <button class="subtab" role="tab" id="st-2" aria-controls="t2" aria-selected="false"><b>2 · Мифы и ловушки</b><span>12 утверждений</span></button>
+    <button class="subtab" role="tab" id="st-3" aria-controls="t3" aria-selected="false"><b>3 · Предскажи последствия</b><span>8 изменений модели</span></button>
+  </div>
+  <div id="t1" role="tabpanel" aria-labelledby="st-1"></div>
+  <div id="t2" role="tabpanel" aria-labelledby="st-2" hidden></div>
+  <div id="t3" role="tabpanel" aria-labelledby="st-3" hidden></div>
+</section>
+
+</main>
+</div>
+<script>
+"use strict";
+/* ================= ДАННЫЕ: модель формы государства ================= */
+const GOV = {
+  absMon:  {name:'Абсолютная монархия', short:'абс. монархия'},
+  parlMon: {name:'Парламентская монархия', short:'парл. монархия'},
+  presRep: {name:'Президентская республика', short:'през. республика'},
+  parlRep: {name:'Парламентская республика', short:'парл. республика'},
+  mixRep:  {name:'Смешанная республика', short:'смеш. республика'}
+};
+const TER = {
+  unitary: {name:'Унитарное государство'},
+  fed:     {name:'Федерация'},
+  conf:    {name:'Конфедерация'}
+};
+const REG = {
+  dem:    {name:'Демократия'},
+  hybrid: {name:'Гибридный режим'},
+  auth:   {name:'Авторитаризм'},
+  tot:    {name:'Тоталитаризм'}
+};
+
+/* Почему меняется результат при смене каждой переменной */
+const VAR_WHY = {
+  gov:'Форма правления отвечает на вопрос, кто осуществляет верховную власть. Её смена перестраивает связи «формирует» и «отвечает перед» между главой государства, парламентом и правительством. Устройство территории и режим при этом остаются прежними.',
+  ter:'Территориальное устройство отвечает на вопрос, как полномочия распределены между центром и частями. Оно меняет законодательство, гражданство и статус частей, но не меняет, кто правит в центре и какими методами.',
+  reg:'Политический режим отвечает на вопрос, какими методами осуществляется власть. Конституционная схема (левая колонка таблицы) не меняется — меняется то, как она работает на практике (правая колонка).',
+  auto:'Автономия — особый статус части государства: самостоятельность в вопросах местного значения без государственного суверенитета. Она не меняет тип устройства всего государства.'
+};
+
+/* Невозможные сочетания: [переменная, значение] блокируется при условии */
+function lockReason(cfg, v, val){
+  const next = Object.assign({}, cfg, {[v]: val});
+  if (next.gov === 'absMon' && next.reg === 'dem') {
+    return {
+      rule:'Демократия требует народного суверенитета, сменяемости и подотчётности власти. В абсолютной монархии власть монарха юридически не ограничена — эти условия взаимоисключающие.',
+      plaus:'Кажется, что «добрый монарх, советующийся с народом» — уже демократия. Но совещательный орган и уважение к традициям не ограничивают власть юридически.',
+      key:'Ограничена ли власть главы государства парламентом и конституцией.',
+      fix: v === 'reg' ? 'Выберите «Парламентская монархия» — и демократия станет доступна: монархия при этом сохранится.' : 'Сначала смените режим на недемократический или выберите парламентскую монархию.'
+    };
+  }
+  if (v === 'auto' && val === true && cfg.ter === 'conf') {
+    return {
+      rule:'Автономия — статус части единого государства. Конфедерация — союз суверенных государств, а не единое государство: «части» в ней сами суверенны.',
+      plaus:'В конфедерации участники действительно самостоятельны, и это похоже на автономию. Но их самостоятельность — суверенитет, а не автономия.',
+      key:'Есть ли единое государство, внутри которого выделяется часть с особым статусом.',
+      fix:'Выберите унитарное государство или федерацию — переключатель автономии станет доступен.'
+    };
+  }
+  return null;
+}
+
+/* Нетипичные, но возможные сочетания */
+function comboNotes(cfg){
+  const n = [];
+  const parlish = ['parlMon','parlRep','mixRep'].includes(cfg.gov);
+  if (cfg.ter === 'conf') n.push('Конфедерация не образует единого государства: выбранные форма правления и режим описывают каждое государство-участника, а не союз.');
+  if (cfg.gov === 'absMon' && cfg.reg === 'hybrid') n.push('Нетипичное сочетание: гибридный режим предполагает выборы с неравной конкуренцией, а в абсолютной монархии верховная власть вообще не выборная. Конкурировать можно лишь за места в совещательном органе.');
+  if (cfg.gov === 'absMon' && cfg.reg === 'tot') n.push('Редкое сочетание: классический тоталитаризм XX века опирался на массовую партию. Монарх может стать центром теократического тоталитаризма, но это скорее исключение.');
+  if (parlish && (cfg.reg === 'auth' || cfg.reg === 'tot')) n.push('Схема и практика расходятся: по конституции правительство отвечает перед парламентом, но при этом режиме парламент подчинён лидеру или правящей партии.' + (cfg.gov === 'parlMon' ? ' Исторический пример: Италия в 1922–1943 годах формально оставалась монархией при фашистском режиме.' : ''));
+  if (cfg.ter === 'fed' && (cfg.reg === 'auth' || cfg.reg === 'tot')) n.push('Федерация сохраняется в конституции, но разграничение полномочий становится номинальным: центр фактически контролирует субъекты. Пример: СССР формально был федерацией.');
+  if (cfg.gov === 'presRep' && cfg.reg !== 'dem') n.push('Сильный президент без реального парламентского и судебного контроля — частая основа персоналистских режимов. Но сама президентская республика режим не определяет: США — президентская республика и демократия.');
+  return n;
+}
+
+const isMon = c => c.gov === 'absMon' || c.gov === 'parlMon';
+
+/* Признаки: «По конституции» (форма) и «На практике» (режим) */
+function props(cfg){
+  const g = cfg.gov, t = cfg.ter, r = cfg.reg;
+  const rows = [];
+  const P = (key, label, grp, law, prac) => rows.push({key, label, grp, law, prac: prac == null ? law : prac});
+  const hard = r === 'auth' || r === 'tot';
+  const headLaw = {absMon:'наследует престол', parlMon:'наследует престол', presRep:'избирается гражданами', parlRep:'избирается парламентом или особой коллегией', mixRep:'избирается гражданами'}[g];
+  let headPrac = headLaw;
+  if (g === 'presRep' || g === 'mixRep') headPrac = {dem:'избирается на конкурентных выборах', hybrid:'переизбирается при неравной конкуренции', auth:'выборы контролируются властью', tot:'выборы безальтернативны'}[r];
+  if (g === 'parlRep' && r !== 'dem') headPrac = 'кандидатуру фактически определяет правящая группа';
+  P('head','Глава государства получает власть','gov',headLaw,headPrac);
+  const formsLaw = {absMon:'монарх', parlMon:'парламентское большинство (монарх назначает формально)', presRep:'президент', parlRep:'парламентское большинство', mixRep:'президент с согласия парламента'}[g];
+  let formsPrac = formsLaw;
+  if (hard) formsPrac = g === 'absMon' ? 'монарх' : (r === 'tot' ? 'руководство правящей партии' : 'лидер и узкая элита');
+  else if (r === 'hybrid' && g !== 'absMon' && g !== 'presRep') formsPrac = 'провластное большинство, полученное при неравной конкуренции';
+  P('forms','Кто формирует правительство','gov',formsLaw,formsPrac);
+  const respLaw = {absMon:'перед монархом', parlMon:'перед парламентом', presRep:'перед президентом', parlRep:'перед парламентом', mixRep:'перед президентом и парламентом'}[g];
+  let respPrac = respLaw;
+  if (hard && g !== 'absMon') respPrac = 'фактически перед лидером или правящей партией';
+  P('resp','Перед кем отвечает правительство','gov',respLaw,respPrac);
+  const ncLaw = (g === 'absMon' || g === 'presRep') ? 'нет' : 'да, вотумом недоверия';
+  const ncPrac = ncLaw === 'нет' ? 'нет' : {dem:'да, и это реальный механизм', hybrid:'формально да, на деле почти не применяется', auth:'формально да, реально нет', tot:'формально да, реально нет'}[r];
+  P('noconf','Парламент может отправить правительство в отставку','gov',ncLaw,ncPrac);
+  const parlLaw = g === 'absMon' ? 'совещательный орган, власть монарха не ограничивает' : 'законодательный орган, избирается гражданами';
+  const parlPrac = g === 'absMon' ? parlLaw : {dem:'реально контролирует исполнительную власть', hybrid:'работает, но большинство обеспечено административным ресурсом', auth:'подчинён лидеру или элите', tot:'декоративный: единогласно одобряет решения партии'}[r];
+  P('parl','Парламент','gov',parlLaw,parlPrac);
+
+  const terLaw = {unitary:'единое государство; регионы без суверенитета', fed:'союзное государство; полномочия разграничены конституцией', conf:'союз суверенных государств на основе договора'}[t];
+  let terPrac = terLaw;
+  if (t === 'fed' && hard) terPrac = 'разграничение номинально: центр контролирует субъекты';
+  if (t === 'fed' && r === 'hybrid') terPrac = 'самостоятельность субъектов ограничена давлением центра';
+  P('ter','Устройство','ter',terLaw,terPrac);
+  P('law','Законодательство','ter',{unitary:'единое',fed:'двухуровневое: федеральное и субъектов',conf:'у каждого участника своё'}[t]);
+  P('cit','Гражданство','ter',{unitary:'единое',fed:'единое',conf:'у каждого участника своё'}[t]);
+  P('exit','Право выхода частей','ter',{unitary:'нет',fed:'обычно нет или ограничено',conf:'признаётся'}[t]);
+  P('auto','Особый статус части территории','ter', cfg.auto ? 'есть: автономия без суверенитета' : 'нет', cfg.auto && hard ? 'автономия под жёстким контролем центра' : null);
+
+  P('elect','Выборы','reg', g === 'absMon' ? 'глава государства не избирается' : 'регулярные, всеобщие, тайные', {dem:'свободные и конкурентные',hybrid:'проводятся, но конкуренция неравна',auth:'ограниченные или контролируемые',tot:'формальные, без выбора'}[r]);
+  P('opp','Оппозиция','reg','право на объединения провозглашено',{dem:'легальна',hybrid:'под давлением',auth:'ограничена',tot:'запрещена'}[r]);
+  P('media','СМИ','reg','свобода слова провозглашена',{dem:'плюралистические',hybrid:'неравный доступ к эфиру',auth:'контролируются',tot:'государственная монополия'}[r]);
+  P('court','Суд','reg','независим по конституции',{dem:'относительно независим',hybrid:'зависим',auth:'зависим',tot:'полностью подчинён'}[r]);
+  return rows;
+}
+
+const SPHERES = ['Политика','Экономика','Общество и СМИ','Культура','Частная жизнь'];
+const LEVEL_NAME = ['свобода','рамки закона','частичный контроль','сильный контроль','полный контроль'];
+const REG_LEVELS = {dem:[0,1,0,0,0], hybrid:[3,1,2,1,0], auth:[4,2,3,1,1], tot:[4,4,4,4,4]};
+const REG_CHIPS = {
+  dem:   [['Выборы','свободные, конкурентные','good'],['Оппозиция','легальна','good'],['СМИ','плюралистические','good'],['Суд','относительно независим','good'],['Права и свободы','гарантируются','good'],['Роль общества','участие и контроль','good']],
+  hybrid:[['Выборы','есть, но конкуренция неравна','mid'],['Оппозиция','под давлением','mid'],['СМИ','неравный доступ','mid'],['Суд','зависим','badc'],['Права и свободы','ограничиваются выборочно','mid'],['Роль общества','голосует, но слабо влияет','mid']],
+  auth:  [['Выборы','ограниченные или контролируемые','badc'],['Оппозиция','ограничена','badc'],['СМИ','контролируются','badc'],['Суд','зависим','badc'],['Права и свободы','ограничиваются','mid'],['Роль общества','пассивная лояльность','mid']],
+  tot:   [['Выборы','формальные','badc'],['Оппозиция','запрещена','badc'],['СМИ','государственная монополия','badc'],['Суд','полностью подчинён','badc'],['Права и свободы','систематически подавляются','badc'],['Роль общества','массовая мобилизация','badc']]
+};
+
+/* ================= Маршрут лаборатории: 7 этапов ================= */
+const ROUTE = [
+  {stage:'Этап 1 · Наблюдение', title:'Изучите готовую модель',
+    text:'Перед вами государство N: парламентская монархия, унитарное, демократия. Ничего не меняйте. Посмотрите на схему «Кто правит»: куда идут стрелки «формирует» и «отвечает».',
+    preset:{gov:'parlMon', ter:'unitary', reg:'dem', auto:false},
+    q:'Кто реально формирует правительство в этой модели?',
+    opts:[
+      {t:'Монарх по своему усмотрению', ok:false, why:'Монарх назначает правительство лишь формально (пунктирная стрелка). Правдоподобно, потому что монарх — глава государства. Определяющее условие — перед кем отвечает правительство: стрелка «отвечает» ведёт к парламенту.'},
+      {t:'Парламентское большинство', ok:true, why:'Стрелка «формирует» идёт от парламента к правительству, «отвечает» — обратно. Монарх царствует, но не правит. Причинная связь: ответственность перед парламентом → правительство держится на парламентском большинстве.'},
+      {t:'Граждане напрямую', ok:false, why:'Граждане избирают парламент, а не правительство: связь двухступенчатая. Правдоподобно, потому что источник власти при демократии — народ. Посмотрите, куда ведёт зелёная стрелка «избирают».'}
+    ]},
+  {stage:'Этап 2 · Одна переменная', title:'Измените форму правления',
+    text:'Переключите форму правления на «Президентская республика». Устройство и режим не трогайте.',
+    req:c=> c.gov === 'presRep' && c.ter === 'unitary' && c.reg === 'dem' && !c.auto,
+    reqText:'форма правления — президентская республика; устройство — унитарное; режим — демократия; автономии нет',
+    q:'Что изменилось в ответственности правительства?',
+    opts:[
+      {t:'Правительство отвечает перед президентом, и парламент не может отправить его в отставку', ok:true, why:'Верно: стрелка «отвечает» переместилась к президенту, строка «Парламент может отправить правительство в отставку» сменилась на «нет». Это и есть разделение властей в президентской республике.'},
+      {t:'Ничего: правительство по-прежнему отвечает перед парламентом', ok:false, why:'Посмотрите в таблицу: строка «Перед кем отвечает правительство» изменилась. Ошибка возникает, если считать, что парламент главный в любой республике.'},
+      {t:'Режим стал менее демократическим', ok:false, why:'Режим — отдельная переменная, вы её не меняли: индикаторы режима остались зелёными. Форма правления не определяет режим.'}
+    ]},
+  {stage:'Этап 3 · Несколько переменных', title:'Федерация с гибридным режимом',
+    text:'Сделайте государство федерацией и переключите режим на «Гибридный». Форму правления выберите любую республику.',
+    req:c=> c.ter === 'fed' && c.reg === 'hybrid' && !isMon(c),
+    reqText:'устройство — федерация; режим — гибридный; форма правления — любая республика',
+    q:'Почему строка «Законодательство: двухуровневое» осталась неизменной, а выборы на практике стали «с неравной конкуренцией»?',
+    opts:[
+      {t:'Устройство и режим — разные переменные: конституция закрепляет субъекты, а режим определяет, как реально проходят выборы', ok:true, why:'Верно. Устройство изменило левую колонку (законодательство, статус частей), режим — правую (как работают выборы, суд, СМИ).'},
+      {t:'Федерация сама порождает гибридный режим', ok:false, why:'Вы изменили обе переменные сразу, поэтому совпадение легко принять за причину. Проверьте: верните режим к демократии — федерация останется федерацией.'},
+      {t:'В гибридном режиме субъекты теряют свои парламенты', ok:false, why:'Формально институты сохраняются — это и есть «фасад» гибридного режима. Меняется практика, а не наличие институтов: см. строку «Устройство» в колонке «На практике».'}
+    ]},
+  {stage:'Этап 4 · Ошибочные представления', title:'Попробуйте невозможное',
+    text:'Выберите «Абсолютная монархия», а затем попробуйте включить «Демократия». Прочитайте, что сообщит модель.',
+    req:(c, f)=> f.triedAbsDem,
+    reqText:'попытка соединить абсолютную монархию и демократию',
+    q:'Почему этот переход невозможен?',
+    opts:[
+      {t:'Неограниченная власть монарха несовместима с народным суверенитетом и сменяемостью власти', ok:true, why:'Верно. Определяющее условие — юридическая неограниченность власти монарха, а не само наличие монарха.'},
+      {t:'Потому что любая монархия недемократична', ok:false, why:'Типичное заблуждение. Выберите «Парламентская монархия» — демократия сразу станет доступна. Монархия сама по себе режим не определяет.'},
+      {t:'Потому что в абсолютной монархии нет парламента', ok:false, why:'Совещательный орган может существовать и при абсолютной монархии (см. схему). Решает не наличие парламента, а то, что он не ограничивает монарха.'}
+    ]},
+  {stage:'Этап 5 · Типовой кейс', title:'Кейс «Вестария»', kind:'case',
+    case:'Главой Вестарии является король, получивший престол по наследству. Правительство формирует партия, победившая на парламентских выборах; в прошлом году парламент выразил недоверие премьер-министру, и тот ушёл в отставку. Страна делится на 12 провинций: их губернаторов назначает центр, собственных законов провинции не принимают. Оппозиция регулярно выигрывает выборы, а Верховный суд недавно отменил незаконный указ правительства.',
+    task:'Настройте модель по описанию и нажмите «Проверить модель».',
+    answer:{gov:['parlMon'], ter:['unitary'], reg:['dem'], auto:[false]},
+    clues:{
+      gov:'«престол по наследству» → монархия; «парламент выразил недоверие премьер-министру» → правительство отвечает перед парламентом → парламентская монархия.',
+      ter:'«губернаторов назначает центр, собственных законов провинции не принимают» → унитарное государство.',
+      reg:'«оппозиция регулярно выигрывает выборы», «суд отменил незаконный указ» → сменяемость власти и независимый суд → демократия.',
+      auto:'Ни одна провинция не имеет особого статуса → автономии нет.'
+    },
+    traps:{
+      gov:{absMon:'Вы приняли наличие короля за неограниченную власть. Но правительство отвечает перед парламентом — значит, власть монарха ограничена.', presRep:'В Вестарии нет президента: глава государства — наследственный король.', parlRep:'Глава государства наследует престол — это монархия, а не республика.', mixRep:'Глава государства наследует престол — это монархия, а не республика.'},
+      ter:{fed:'Число регионов (12) — ложный признак: федерацию определяет не количество частей, а их конституционная самостоятельность. Провинции законов не принимают.', conf:'Провинции — не суверенные государства, договора между ними нет.'},
+      reg:{hybrid:'Признаки неравной конкуренции в кейсе отсутствуют: оппозиция побеждает, суд ограничивает власть.', auth:'Ложный признак — король. Монархия не делает режим авторитарным; смотрите на выборы, оппозицию и суд.', tot:'В кейсе нет ни единой идеологии, ни массовой партии, ни контроля частной жизни.'},
+      auto:{true:'В кейсе нет региона с особым статусом: все 12 провинций устроены одинаково.'}
+    },
+    whatif:['Если бы провинции принимали собственные конституции и законы, а их полномочия были закреплены в конституции страны → федерация.','Если бы король сам назначал и увольнял министров без оглядки на парламент → абсолютная монархия, и демократия стала бы невозможна.','Если бы оппозиция годами не допускалась к эфиру и проигрывала при неравных условиях → гибридный режим, хотя форма правления осталась бы прежней.']},
+  {stage:'Этап 6 · Пограничный кейс', title:'Кейс «Остерия»', kind:'case',
+    case:'Президента Остерии избирают граждане. Правительство назначает президент, но премьер-министр должен получить доверие парламента, и парламент может отправить его в отставку. Остерия состоит из 8 земель с собственными конституциями и парламентами; одна земля, где живёт языковое меньшинство, имеет особый статус и право на собственный официальный язык. Выборы проводятся каждые пять лет, но главного оппозиционного кандидата сняли с выборов по формальному поводу, крупнейшие телеканалы принадлежат структурам, близким к власти, суды отказываются рассматривать жалобы оппозиции. При этом частный бизнес работает свободно, а независимые интернет-издания продолжают выходить.',
+    task:'Настройте модель и нажмите «Проверить модель». Здесь есть данные, которые легко принять за решающие.',
+    answer:{gov:['mixRep'], ter:['fed'], reg:['hybrid','auth'], auto:[true]},
+    preferred:{reg:'hybrid'},
+    clues:{
+      gov:'Президент избирается гражданами и назначает правительство, но правительство нуждается в доверии парламента → ответственность перед обоими → смешанная республика.',
+      ter:'«8 земель с собственными конституциями и парламентами» → двухуровневая система → федерация.',
+      reg:'Выборы есть, но кандидата сняли, эфир у провластных структур, суды не защищают оппозицию; при этом бизнес и часть СМИ свободны → фасад демократии при неравной конкуренции → гибридный режим (на границе с конкурентным авторитаризмом).',
+      auto:'Одна земля с особым языковым статусом → особый статус части территории (асимметрия федерации).'
+    },
+    traps:{
+      gov:{presRep:'Ложный признак: «президента избирают граждане». Это есть и в смешанной республике. Решает то, что правительство отвечает ещё и перед парламентом.', parlRep:'Президент здесь избирается гражданами и назначает правительство — он не церемониальная фигура.', absMon:'В Остерии нет монарха.', parlMon:'В Остерии нет монарха.'},
+      ter:{unitary:'Земли имеют собственные конституции и парламенты — это признак субъектов федерации, а не административных единиц.', conf:'Земли не суверенны и не связаны договором как независимые государства.'},
+      reg:{dem:'Ложный признак: «выборы проводятся каждые пять лет». Если главного кандидата снимают, а суд не защищает оппозицию, выборы не конкурентны.', tot:'Свободный бизнес и независимые интернет-издания несовместимы с тоталитарным контролем всех сфер.'},
+      auto:{false:'Вы проигнорировали землю с особым языковым статусом: это особый статус части территории.'}
+    },
+    regNote:'Граница между гибридным режимом и конкурентным авторитаризмом здесь размыта. Для окончательного вывода не хватает данных: может ли оппозиция в принципе победить хотя бы на региональных выборах? Сменялась ли власть за последние годы? Насколько массовы ограничения? Если оппозиция иногда побеждает — гибридный режим; если выборы годами безальтернативны и независимые СМИ закрываются — авторитаризм.',
+    whatif:['Если бы правительство отвечало только перед президентом → президентская республика.','Если бы земли не имели собственных конституций и парламентов → унитарное государство с автономией.','Если бы снятый кандидат был восстановлен судом, а эфир распределялся поровну → демократия.']},
+  {stage:'Этап 7 · Итоговое решение', title:'Кейс «Нордландский союз»', kind:'case', final:true,
+    case:'Три королевства заключили договор о Нордландском союзе для общей обороны и единой таможни. Общий совет союза принимает решения только единогласно, а каждое королевство вправе выйти из союза, уведомив остальных за год. Граждане сохраняют гражданство своих королевств. В каждом королевстве монарх выполняет церемониальные функции, а правительство формируется парламентским большинством и отвечает перед парламентом. Выборы свободные, власть регулярно переходит к оппозиции, независимые суды защищают права граждан. У союза есть общий флаг и общая парламентская ассамблея, которая может лишь давать рекомендации.',
+    task:'Решите самостоятельно: настройте модель и нажмите «Проверить модель». После проверки появится подробный разбор.',
+    answer:{gov:['parlMon'], ter:['conf'], reg:['dem'], auto:[false]},
+    clues:{
+      gov:'«монарх выполняет церемониальные функции», «правительство отвечает перед парламентом» → парламентская монархия (у каждого участника).',
+      ter:'«договор», «решения единогласно», «вправе выйти», «гражданство своих королевств» → конфедерация.',
+      reg:'«выборы свободные», «власть переходит к оппозиции», «независимые суды» → демократия (в государствах-участниках).',
+      auto:'Автономия неприменима: конфедерация — союз суверенных государств.'
+    },
+    traps:{
+      gov:{absMon:'Ложный признак: «королевства». Монархи здесь церемониальны, а правительство отвечает перед парламентом.', presRep:'В королевствах нет президента.', parlRep:'Глава государства — монарх, значит, это монархия.', mixRep:'Глава государства — монарх, значит, это монархия.'},
+      ter:{fed:'Ложный признак: общий флаг и общая ассамблея похожи на федеральные органы. Но ассамблея лишь рекомендует, решения требуют единогласия, есть право выхода и раздельное гражданство — это конфедерация.', unitary:'Союз создан договором трёх суверенных королевств — это не единое государство.'},
+      reg:{hybrid:'В кейсе нет признаков неравной конкуренции.', auth:'Ложный признак — монархи. Монархия не определяет режим.', tot:'Нет ни единой идеологии, ни партии-монополиста.'},
+      auto:{true:'Автономия возможна только внутри единого государства.'}
+    },
+    whatif:['Если бы общая ассамблея принимала обязательные законы большинством голосов, граждане получили единое гражданство, а выход был бы запрещён → союз превратился бы в федерацию (как США в 1787–1789 годах).','Если бы монархи сами формировали правительства, не отвечающие перед парламентами → абсолютные монархии, и демократический режим стал бы невозможен.','Если бы оппозицию в одном из королевств не допускали к выборам → режим этого участника был бы гибридным или авторитарным, а устройство союза не изменилось бы.']}
+];
+
+/* ================= ТРЕНИРОВКА 1: определи форму государства (10 кейсов) ================= */
+const NA = 'na';
+const NA_NAME = 'Данных недостаточно';
+const TR_CASES = [
+  {name:'Альмера',
+   text:'Президент избирается всенародно на четыре года, сам возглавляет правительство и назначает министров. Парламент не может отправить министров в отставку, но может преодолеть вето президента и начать процедуру импичмента. Страна состоит из 30 штатов с собственными конституциями, законодательными собраниями и судами. Выборы конкурентны: за последние десять лет власть дважды переходила к оппозиции, суды не раз отменяли указы президента.',
+   answer:{gov:['presRep'], ter:['fed'], auto:[false], reg:['dem']},
+   clues:{gov:'Президент избирается народом и сам возглавляет правительство, парламент не может отправить министров в отставку → президентская республика.', ter:'30 штатов с собственными конституциями и законодательными собраниями → федерация.', auto:'Ни один штат не выделен особым статусом → автономии нет.', reg:'Сменяемость власти, конкурентные выборы, суды ограничивают президента → демократия.'},
+   traps:{gov:{mixRep:'Импичмент и преодоление вето — это сдержки, а не ответственность правительства перед парламентом. Без вотума недоверия республика остаётся президентской.', parlRep:'Президент здесь избирается народом и сам руководит правительством — он не церемониальная фигура.'}, ter:{unitary:'Штаты с собственными конституциями — признак субъектов федерации, а не административных единиц.', conf:'Штаты не суверенны и не связаны договором как независимые государства.'}, reg:{hybrid:'Признаков неравной конкуренции в описании нет: оппозиция побеждает, суды независимы.'}},
+   whatif:'Если бы парламент мог отправить правительство в отставку вотумом недоверия, республика стала бы смешанной.'},
+  {name:'Бореаль',
+   text:'Король наследует престол и единолично назначает министров, которые отвечают только перед ним. Консультативный совет назначается королём и даёт лишь рекомендации. Политические партии запрещены, СМИ подвергаются цензуре. При этом государство не навязывает гражданам обязательной идеологии, частный бизнес и иностранные инвестиции поощряются, частная жизнь в целом не контролируется. Провинциями управляют губернаторы, назначенные королём.',
+   answer:{gov:['absMon'], ter:['unitary'], auto:[false], reg:['auth']},
+   clues:{gov:'Наследственный король, министры отвечают только перед ним, совет лишь советует → абсолютная монархия.', ter:'Провинциями управляют назначенные губернаторы → унитарное государство.', auto:'Особого статуса нет ни у одной провинции → автономии нет.', reg:'Партии запрещены, цензура, но нет обязательной идеологии и контроля частной жизни → авторитаризм.'},
+   traps:{gov:{parlMon:'Совет здесь не ограничивает короля: он назначен им и лишь даёт рекомендации.'}, reg:{tot:'Запрет партий и цензура есть и при авторитаризме. Тоталитаризм требует обязательной идеологии, массовой мобилизации и контроля всех сфер, включая частную жизнь и экономику, — здесь бизнес и частная жизнь свободны.', hybrid:'В гибридном режиме проводятся выборы с участием оппозиции, пусть и в неравных условиях. Здесь партий нет вовсе.'}},
+   whatif:'Если бы король обязал всех граждан следовать единой идеологии и контролировал экономику и частную жизнь, режим приблизился бы к тоталитарному (теократический тоталитаризм).'},
+  {name:'Ведания',
+   text:'Президента избирает парламент на пять лет, его функции в основном представительские. Правительство формируется коалицией партий и уходит в отставку, если парламент выражает ему недоверие. Страна делится на 14 округов, которые не принимают собственных законов. Один островной округ имеет свой парламент и право принимать законы по вопросам культуры, языка и рыболовства. О том, как проходят выборы и насколько свободны СМИ и суды, в описании ничего не сказано.',
+   answer:{gov:['parlRep'], ter:['unitary'], auto:[true], reg:[NA]},
+   clues:{gov:'Президента избирает парламент, правительство уходит в отставку при недоверии парламента → парламентская республика.', ter:'Округа не принимают законов, суверенитета нет → унитарное государство.', auto:'Островной округ со своим парламентом по вопросам культуры, языка, рыболовства → автономия.', reg:'Сведений о выборах, оппозиции, СМИ и судах нет → режим определить нельзя.'},
+   traps:{ter:{fed:'Один регион с особыми полномочиями не делает государство федерацией. Остальные 13 округов законов не принимают — это автономия в унитарном государстве.'}, auto:{false:'Вы пропустили островной округ с собственным парламентом: это особый статус части территории.'}, reg:{dem:'Парламентская республика и коалиционное правительство ещё не доказывают демократию. Форма правления не определяет режим: нужны данные о выборах, оппозиции, СМИ, суде.', hybrid:'Данных о неравной конкуренции нет. Вывод о режиме без сведений о практике — догадка.', auth:'Данных об ограничении конкуренции нет. Вывод о режиме без сведений о практике — догадка.', tot:'Данных о контроле государства над обществом нет.'}},
+   missing:'Чтобы определить режим, нужно знать: конкурентны ли выборы, легальна ли оппозиция, свободны ли СМИ, независим ли суд, сменялась ли власть.',
+   whatif:'Если бы все 14 округов имели собственные законодательные собрания с полномочиями, закреплёнными в конституции, государство стало бы федерацией.'},
+  {name:'Гордия',
+   text:'Президент избирается гражданами и назначает премьер-министра, но правительство должно пользоваться доверием парламента. На последних выборах кандидат власти получил 87% голосов; двух главных оппонентов не зарегистрировали из-за «ошибок в подписях»; крупнейшие телеканалы принадлежат государству. При этом в парламенте есть несколько оппозиционных депутатов, а интернет-издания работают, хотя и под давлением. Регионы страны — административные единицы без собственных законов.',
+   answer:{gov:['mixRep'], ter:['unitary'], auto:[false], reg:['hybrid','auth']}, preferred:{reg:'hybrid'},
+   clues:{gov:'Президент избран народом и назначает премьера, но правительство нуждается в доверии парламента → смешанная республика.', ter:'Регионы без собственных законов → унитарное государство.', auto:'Особого статуса нет → автономии нет.', reg:'Выборы есть, но главных оппонентов не допустили, эфир у государства; при этом часть оппозиции и интернет-СМИ сохраняются → гибридный режим (на границе с конкурентным авторитаризмом).'},
+   traps:{gov:{presRep:'Всенародно избранный президент есть и в смешанной республике. Решает то, что правительство нуждается в доверии парламента.'}, reg:{dem:'Ложный признак: выборы проводятся. Но если главных оппонентов не регистрируют, а эфир у государства, конкуренции нет.', tot:'Оппозиционные депутаты и интернет-издания несовместимы с тоталитарной монополией.'}},
+   altNote:'Граница между гибридным режимом и конкурентным авторитаризмом здесь размыта. Решить окончательно помогли бы данные: побеждает ли оппозиция хоть где-нибудь, сменялась ли власть, насколько массовы ограничения.',
+   whatif:'Если бы правительство отвечало только перед президентом, республика была бы президентской — при том же режиме.'},
+  {name:'Далерия',
+   text:'Королева — глава государства, её полномочия церемониальны; правительство формирует парламентское большинство, и оно отвечает перед парламентом. Страна состоит из девяти земель с собственными конституциями и парламентами; полномочия земель и центра разграничены конституцией, земли участвуют в формировании верхней палаты. Суды независимы, выборы свободны, власть регулярно переходит от одной коалиции к другой.',
+   answer:{gov:['parlMon'], ter:['fed'], auto:[false], reg:['dem']},
+   clues:{gov:'Церемониальная королева, правительство отвечает перед парламентом → парламентская монархия.', ter:'Земли с конституциями и парламентами, разграничение полномочий, участие в формировании центра → федерация.', auto:'Все земли устроены одинаково → особого статуса нет.', reg:'Свободные выборы, независимые суды, сменяемость → демократия.'},
+   traps:{gov:{absMon:'Ложный признак: королева. Её полномочия церемониальны, правительство отвечает перед парламентом.'}, ter:{unitary:'Монархия не исключает федерацию: форма правления и устройство — разные элементы. Земли с конституциями — субъекты федерации.'}, reg:{auth:'Ложный признак — монарх. Режим определяется выборами, судом и сменяемостью власти.'}},
+   whatif:'Если бы королева сама формировала правительство без оглядки на парламент, монархия стала бы абсолютной, и демократия была бы невозможна.'},
+  {name:'Эсталия',
+   text:'Единственная правящая партия руководствуется официальной идеологией, обязательной для изучения в школах и на предприятиях. Все газеты и телеканалы государственные, экономика централизованно планируется, граждан обязывают участвовать в массовых шествиях, действует политическая полиция. По конституции страна — федерация шести республик, а правительство избирается парламентом и отвечает перед ним; председателя президиума, главу государства, также избирает парламент. На деле руководителей республик назначает центр, а все решения принимает руководство партии.',
+   answer:{gov:['parlRep'], ter:['fed'], auto:[false], reg:['tot']},
+   clues:{gov:'По конституции глава государства и правительство избираются парламентом и отвечают перед ним → парламентская республика (формально).', ter:'По конституции — федерация шести республик → федерация (на практике номинальная).', auto:'Особого статуса нет → автономии нет.', reg:'Единственная партия, обязательная идеология, монополия СМИ, плановая экономика, мобилизация, политическая полиция → тоталитаризм.'},
+   traps:{gov:{presRep:'Президента, избранного народом, здесь нет. Форма правления определяется по конституционной схеме; то, что решает партия, — признак режима.', [NA]:'Данных достаточно: конституционная схема описана. Расхождение схемы и практики — характеристика режима, а не отсутствие формы правления.'}, ter:{unitary:'Фактический контроль центра — признак режима. По конституции государство федеративное: это и есть «федерация на бумаге».'}, reg:{auth:'Авторитаризм обычно не контролирует экономику, культуру и частную жизнь и не мобилизует массы. Здесь контролируется всё.'}},
+   whatif:'Если бы партия отказалась от обязательной идеологии и мобилизации, но сохранила монополию на власть, режим стал бы авторитарным; форма правления и устройство по конституции не изменились бы.'},
+  {name:'Жемания',
+   text:'Пять государств подписали договор о единой валюте и общей обороне. Общий совет принимает решения единогласно, любое государство может выйти из союза, уведомив остальных. Граждане сохраняют гражданство своих государств. Три участника — президентские республики, два — парламентские монархии. О политических режимах участников в описании ничего не сказано.',
+   answer:{gov:[NA], ter:['conf'], auto:[false], reg:[NA]},
+   clues:{gov:'У участников разные формы правления, а у союза своей формы правления нет → единого ответа не существует.', ter:'Договор, единогласие, право выхода, раздельное гражданство → конфедерация.', auto:'Автономия неприменима к союзу суверенных государств.', reg:'Данных о выборах, оппозиции, СМИ и судах нет → режим определить нельзя.'},
+   traps:{gov:{presRep:'Президентские республики — лишь три участника из пяти. Конфедерация не единое государство: единой формы правления у неё нет.', parlMon:'Парламентские монархии — лишь два участника из пяти. Конфедерация не единое государство: единой формы правления у неё нет.'}, ter:{fed:'Ложный признак: общая валюта и оборона. Но решения единогласны, выход свободен, гражданство раздельное — это конфедерация.'}, reg:{dem:'Данных о практике нет. Форма правления участников не определяет их режим.'}},
+   missing:'Конфедерация — союз государств, поэтому форма правления и режим описывают каждого участника отдельно. Для вывода о режимах нужны сведения о выборах, оппозиции, СМИ и судах в каждом государстве.',
+   whatif:'Если бы общий совет принимал обязательные законы большинством голосов, граждане получили единое гражданство, а выход был запрещён, союз стал бы федерацией.'},
+  {name:'Зорания',
+   text:'Президент избирается гражданами и возглавляет правительство; парламент не может выразить ему недоверие. Выборы проходят регулярно, но последние двадцать лет побеждает один и тот же президент; оппозиционные партии не регистрируют, СМИ контролируются, суды зависимы. При этом государство не навязывает идеологию, частный бизнес и частная жизнь в целом свободны. Страна делится на четыре автономные республики и десять областей: у автономий есть парламенты по вопросам языка и культуры, но нет собственных конституций и суверенитета.',
+   answer:{gov:['presRep'], ter:['unitary'], auto:[true], reg:['auth']},
+   clues:{gov:'Президент избран народом, возглавляет правительство, вотума недоверия нет → президентская республика.', ter:'Нет субъектов с собственными конституциями, области административные → унитарное государство.', auto:'Республики с парламентами по языку и культуре без суверенитета → автономия.', reg:'Оппозиция не допускается, СМИ и суды под контролем, но идеологии и контроля частной жизни нет → авторитаризм.'},
+   traps:{ter:{fed:'Ложный признак: слово «республики». Решает не название, а статус: без собственных конституций и разграничения полномочий это автономии в унитарном государстве.'}, reg:{hybrid:'В гибридном режиме оппозиция участвует в выборах, хотя и в неравных условиях. Здесь её не регистрируют вовсе, а власть не меняется двадцать лет.', tot:'Нет обязательной идеологии, мобилизации и контроля частной жизни — это авторитаризм, а не тоталитаризм.', dem:'Ложный признак: регулярные выборы. Без оппозиции и независимого суда выборы не конкурентны.'}, auto:{false:'Вы пропустили автономные республики с собственными парламентами по вопросам языка и культуры.'}},
+   whatif:'Если бы автономные республики имели собственные конституции, а их полномочия были разграничены с центром конституцией страны, государство стало бы (асимметричной) федерацией.'},
+  {name:'Илирия',
+   text:'Глава государства — президент, которого избирает парламент; правительство формируется партийным большинством и отвечает перед парламентом. Страна — союзное государство из двадцати провинций с собственными законодательными собраниями; полномочия разграничены конституцией, провинции участвуют в формировании верхней палаты. Международные наблюдатели признали последние выборы свободными, оппозиция победила в семи провинциях, суды независимы.',
+   answer:{gov:['parlRep'], ter:['fed'], auto:[false], reg:['dem']},
+   clues:{gov:'Президента избирает парламент, правительство отвечает перед парламентом → парламентская республика.', ter:'Провинции с законодательными собраниями, разграничение полномочий конституцией, участие в формировании центра → федерация.', auto:'Особого статуса нет → автономии нет.', reg:'Свободные выборы, победы оппозиции, независимые суды → демократия.'},
+   traps:{ter:{unitary:'Ложный признак: слово «провинции». Решает статус: собственные законодательные собрания и конституционное разграничение полномочий — признаки субъектов федерации.'}, gov:{presRep:'Президента избирает парламент, а правительство отвечает перед парламентом — это парламентская республика.', mixRep:'В смешанной республике президента избирает народ. Здесь его избирает парламент.'}},
+   whatif:'Если бы президента избирали граждане и он назначал правительство, ответственное и перед ним, и перед парламентом, республика стала бы смешанной.'},
+  {name:'Кастрия',
+   text:'Конституция провозглашает президентскую республику: президент избирается гражданами и возглавляет правительство. Три года назад армия отстранила президента. Сейчас страной управляет военный совет, действие конституции приостановлено, парламент распущен, выборы отложены на неопределённый срок, деятельность партий приостановлена. При этом идеология не навязывается, торговля и частная жизнь в целом не регулируются. Страна унитарная, автономий нет.',
+   answer:{gov:['presRep', NA], ter:['unitary'], auto:[false], reg:['auth']}, preferred:{gov:'presRep'},
+   clues:{gov:'Конституция провозглашает президентскую республику, но её действие приостановлено, а власть у военного совета → формально президентская республика; фактически форма правления не действует.', ter:'Прямо указано: унитарная, автономий нет.', auto:'Автономий нет.', reg:'Власть военных, партии и выборы приостановлены, но идеологии и контроля частной жизни нет → авторитаризм (военный режим).'},
+   traps:{reg:{tot:'Военный режим без обязательной идеологии, мобилизации и контроля экономики и частной жизни — разновидность авторитаризма.', hybrid:'Гибридный режим проводит выборы с оппозицией. Здесь выборов и партий нет вовсе.'}, gov:{parlRep:'Конституция провозглашает президентскую республику; парламент к тому же распущен.', absMon:'Военный совет — не монарх: власть не наследуется.'}},
+   altNote:'Оба ответа о форме правления допустимы. По конституции это президентская республика, но её действие приостановлено: реальную власть осуществляет военный совет, и конституционная схема не работает. В ответе на семинаре или экзамене это стоит прямо оговорить.',
+   whatif:'Если бы военные провели выборы с участием оппозиции и вернули действие конституции, режим мог бы стать гибридным или демократическим; форма правления — снова президентская республика.'}
+];
+
+/* ================= ТРЕНИРОВКА 2: мифы и ловушки (12 утверждений) ================= */
+const VERDICTS = [['true','Верно'],['false','Неверно'],['depends','Зависит от условий']];
+const MYTHS = [
+  {s:'Монархия несовместима с демократическим режимом.', a:'false', el:'gov',
+   rule:'Форма правления не определяет режим. Несовместима с демократией только абсолютная монархия.', plaus:'Монарх получает власть по наследству, а не на выборах, — это кажется противоречием народному суверенитету.', key:'Ограничена ли власть монарха парламентом и конституцией.', ex:'Великобритания, Япония, Испания — парламентские монархии и демократии.'},
+  {s:'В абсолютной монархии демократический режим невозможен.', a:'true', el:'gov',
+   rule:'Демократия требует народного суверенитета, сменяемости и подотчётности власти, а власть абсолютного монарха юридически не ограничена.', plaus:'Можно подумать, что «мудрый монарх, советующийся с народом» обеспечивает демократию.', key:'Юридическая неограниченность власти монарха.', ex:'В лаборатории это сочетание заблокировано: «Переход невозможен».'},
+  {s:'Если в стране есть президент, это президентская республика.', a:'false', el:'gov',
+   rule:'Форму правления определяет не наличие поста президента, а то, перед кем отвечает правительство.', plaus:'Название поста подсказывает название формы правления.', key:'Отвечает ли правительство перед парламентом (вотум недоверия).', ex:'В Германии и Италии есть президенты, но это парламентские республики.'},
+  {s:'Крупное по площади государство должно быть федерацией.', a:'false', el:'ter',
+   rule:'Территориальное устройство — это распределение полномочий между центром и частями, а не размер территории.', plaus:'Большой территорией кажется удобнее управлять через самостоятельные регионы.', key:'Есть ли у частей конституционно закреплённая самостоятельность.', ex:'Казахстан — девятое по площади государство мира и при этом унитарное.'},
+  {s:'Субъекты федерации вправе свободно выйти из её состава.', a:'false', el:'ter',
+   rule:'Субъекты федерации обычно не обладают полным суверенитетом и не могут свободно выйти из её состава.', plaus:'У субъектов есть свои конституции и парламенты — кажется, что они почти государства.', key:'У кого суверенитет: у федерации, а не у субъектов.', ex:'Право выхода — признак конфедерации.'},
+  {s:'Участники конфедерации, как правило, сохраняют суверенитет.', a:'true', el:'ter',
+   rule:'Конфедерация — союз суверенных государств, созданный договором для ограниченных общих целей.', plaus:'Общие органы и общие цели наводят на мысль, что суверенитет передан союзу.', key:'Договорная основа и право выхода.', ex:'США в 1781–1789 годах, Германский союз.'},
+  {s:'Наличие автономии делает государство федерацией.', a:'false', el:'ter',
+   rule:'Автономия — особый статус части государства без суверенитета; она не меняет устройство всего государства.', plaus:'У автономии бывают свой парламент и законы — как у субъекта федерации.', key:'Особый статус одной части или конституционное разделение власти по всей стране.', ex:'Аландские острова — автономия в составе унитарной Финляндии.'},
+  {s:'Если в стране проводятся выборы, режим демократический.', a:'false', el:'reg',
+   rule:'Демократия — не только выборы. Без конкуренции, свободы СМИ и независимого суда выборы становятся фасадом.', plaus:'Выборы — самый заметный институт демократии.', key:'Условия выборов: допускают ли оппозицию, равен ли доступ к СМИ, защищает ли суд.', ex:'Гибридные режимы и электоральный авторитаризм проводят выборы регулярно.'},
+  {s:'Федерация может иметь недемократический режим.', a:'true', el:'link',
+   rule:'Территориальное устройство и политический режим — разные элементы формы государства.', plaus:'Разделение полномочий с регионами похоже на ограничение власти.', key:'Режим определяют методы осуществления власти, а не распределение полномочий.', ex:'Формально федеративный СССР в сталинский период был тоталитарным.'},
+  {s:'Авторитарный режим стремится контролировать все сферы жизни, включая частную.', a:'false', el:'reg',
+   rule:'Авторитаризм контролирует прежде всего политику и обычно сохраняет часть частных и экономических свобод. Контроль всех сфер — признак тоталитаризма.', plaus:'Оба режима относятся к автократии и ограничивают свободу.', key:'Объём контроля: только политика или все сферы жизни.', ex:'Сравните шкалы контроля в лаборатории для авторитаризма и тоталитаризма.'},
+  {s:'Унитарное государство всегда централизовано.', a:'false', el:'ter',
+   rule:'Унитарное государство может быть централизованным или децентрализованным.', plaus:'«Единое государство» звучит как «всё решает центр».', key:'Какую часть вопросов центр передаёт на места.', ex:'Унитарные государства могут иметь сильное местное самоуправление и автономии.'},
+  {s:'Автономия всегда укрепляет единство государства.', a:'depends', el:'ter',
+   rule:'Автономия может снижать напряжённость, учитывая язык и культуру региона, но при слабых гарантиях и конфликте элит может стать площадкой для сепаратизма.', plaus:'Учёт особенностей региона кажется безусловным благом.', key:'Насколько чётко закреплены полномочия автономии и выполняет ли центр свои обязательства.', ex:'Это один из вопросов для обсуждения в лекции.'}
+];
+
+/* ================= ТРЕНИРОВКА 3: предскажи последствия (8 изменений) ================= */
+const PREDICT = [
+  {from:{gov:'parlMon', ter:'unitary', reg:'dem', auto:false}, v:'gov', to:'presRep'},
+  {from:{gov:'presRep', ter:'unitary', reg:'dem', auto:false}, v:'ter', to:'fed'},
+  {from:{gov:'parlRep', ter:'fed', reg:'dem', auto:false}, v:'reg', to:'auth'},
+  {from:{gov:'parlRep', ter:'fed', reg:'dem', auto:false}, v:'ter', to:'conf'},
+  {from:{gov:'parlMon', ter:'unitary', reg:'dem', auto:false}, v:'auto', to:true},
+  {from:{gov:'mixRep', ter:'unitary', reg:'hybrid', auto:false}, v:'reg', to:'dem'},
+  {from:{gov:'presRep', ter:'unitary', reg:'auth', auto:false}, v:'gov', to:'parlRep'},
+  {from:{gov:'absMon', ter:'unitary', reg:'auth', auto:false}, v:'reg', to:'tot'}
+];
+
+/* ================= УТИЛИТЫ ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lowE = s => s.toLowerCase().replace(/ё/g, 'е');
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const pill = (cls, txt) => `<span class="pill ${cls}">${esc(txt)}</span>`;
+
+/* Двухшаговая кнопка «Начать заново» */
+function wireRestart(el, onReset){
+  const ask = $('.ask', el), yes = $('.yes', el), no = $('.no', el);
+  ask.addEventListener('click', () => { el.classList.add('asking'); yes.focus(); });
+  no.addEventListener('click', () => { el.classList.remove('asking'); ask.focus(); });
+  yes.addEventListener('click', () => { el.classList.remove('asking'); onReset(); });
+}
+const restartHTML = (label = 'Начать заново', q = 'Сбросить все ответы?') =>
+  `<div class="restart"><button class="btn ask" type="button">${label}</button><span class="confirm"><span class="small">${q}</span><button class="btn danger yes" type="button">Да, сбросить</button><button class="btn ghost no" type="button">Отмена</button></span></div>`;
+
+/* Вкладки с навигацией стрелками */
+function tablist(tabs, panels, onSelect){
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => select(i));
+    t.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const j = (i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+        tabs[j].focus(); select(j);
+      }
+    });
+  });
+  function select(i){
+    tabs.forEach((t, j) => { t.setAttribute('aria-selected', String(i === j)); t.tabIndex = i === j ? 0 : -1; });
+    panels.forEach((p, j) => { p.hidden = i !== j; });
+    if (onSelect) onSelect(i);
+  }
+  select(0);
+}
+
+/* ================= ЛАБОРАТОРИЯ ================= */
+const DEFAULT_CFG = {gov:'parlMon', ter:'unitary', reg:'dem', auto:false};
+let cfg = Object.assign({}, DEFAULT_CFG);
+let flags = {triedAbsDem:false};
+let lastFx = {kind:'init'};
+let changedKeys = new Set();
+const VAR_LABEL = {gov:'Форма правления', ter:'Территориальное устройство', reg:'Политический режим', auto:'Автономия'};
+const valName = (v, val) => v === 'gov' ? GOV[val].name : v === 'ter' ? TER[val].name : v === 'reg' ? REG[val].name : (val ? 'есть' : 'нет');
+
+function buildControls(){
+  const mk = (v, dict, host) => {
+    host.innerHTML = Object.keys(dict).map(k => `<button type="button" class="opt" data-v="${v}" data-val="${k}">${esc(dict[k].name)}</button>`).join('');
+  };
+  mk('gov', GOV, $('#seg-gov'));
+  mk('ter', TER, $('#seg-ter'));
+  $('#seg-ter').insertAdjacentHTML('beforeend', `<button type="button" class="opt" data-v="auto" data-val="true">+ Автономия региона</button>`);
+  mk('reg', REG, $('#seg-reg'));
+  $$('.opt[data-v]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.v;
+    const val = v === 'auto' ? !cfg.auto : b.dataset.val;
+    setVar(v, val);
+  }));
+}
+function isAtypical(c){ return c.gov === 'absMon' && (c.reg === 'hybrid' || c.reg === 'tot'); }
+function updateControls(){
+  $$('.opt[data-v]').forEach(b => {
+    const v = b.dataset.v;
+    const val = v === 'auto' ? true : b.dataset.val;
+    const pressed = v === 'auto' ? cfg.auto : cfg[v] === val;
+    b.setAttribute('aria-pressed', String(pressed));
+    const lr = !pressed && lockReason(cfg, v, val);
+    b.classList.toggle('locked', !!lr);
+    b.setAttribute('aria-disabled', lr ? 'true' : 'false');
+    const nx = Object.assign({}, cfg, {[v]: val});
+    b.classList.toggle('flag', !pressed && !lr && isAtypical(nx));
+    b.title = lr ? 'Переход невозможен — нажмите, чтобы узнать почему' : (isAtypical(nx) && !pressed ? 'Нетипичное сочетание' : '');
+  });
+  $('#gov-title').textContent = cfg.ter === 'conf' ? 'Форма правления государств-участников · кто и как правит' : 'Форма правления · кто и как правит';
+}
+function lockSnapshot(c){
+  const out = {};
+  for (const k of Object.keys(GOV)) out['gov:' + k] = !!lockReason(c, 'gov', k);
+  for (const k of Object.keys(REG)) out['reg:' + k] = !!lockReason(c, 'reg', k);
+  out['auto:true'] = !!lockReason(c, 'auto', true);
+  return out;
+}
+function setVar(v, val){
+  const lr = lockReason(cfg, v, val);
+  if (lr) {
+    if ((v === 'reg' && val === 'dem') || (v === 'gov' && val === 'absMon')) flags.triedAbsDem = true;
+    lastFx = {kind:'lock', v, val, lr};
+    renderEffects(); renderRoute(); updateControls();
+    return;
+  }
+  if (cfg[v] === val) return;
+  const before = Object.assign({}, cfg);
+  const pBefore = props(before), lBefore = lockSnapshot(before);
+  cfg[v] = val;
+  let autoOff = false;
+  if (v === 'ter' && val === 'conf' && cfg.auto) { cfg.auto = false; autoOff = true; }
+  const pAfter = props(cfg), lAfter = lockSnapshot(cfg);
+  const diffs = [];
+  changedKeys = new Set();
+  pAfter.forEach((r, i) => {
+    const b = pBefore[i];
+    if (b.law !== r.law || b.prac !== r.prac) {
+      changedKeys.add(r.key);
+      diffs.push({label:r.label, law: b.law !== r.law ? [b.law, r.law] : null, prac: b.prac !== r.prac ? [b.prac, r.prac] : null});
+    }
+  });
+  const locks = [];
+  for (const k of Object.keys(lAfter)) if (lAfter[k] !== lBefore[k]) {
+    const [vv, vl] = k.split(':');
+    locks.push({on:lAfter[k], name: vv === 'auto' ? 'Автономия региона' : valName(vv, vl)});
+  }
+  lastFx = {kind:'change', v, from:before[v], to:val, diffs, locks, autoOff};
+  renderLab();
+}
+function applyPreset(p){
+  cfg = Object.assign({}, p);
+  changedKeys = new Set();
+  lastFx = {kind:'preset'};
+  renderLab();
+}
+
+/* ---------- схема «Кто правит» ---------- */
+function svgGov(){
+  const g = cfg.gov, r = cfg.reg, mon = isMon(cfg);
+  const elect = 'e-' + r;
+  const nodes = {
+    head:{x:55, y:13, w:190, h:40, t: mon ? 'Монарх' : 'Президент',
+      s:{absMon:'наследует · власть не ограничена', parlMon:'наследует · царствует, не правит', presRep:'глава исполнительной власти', parlRep:'представительские функции', mixRep:'сильный глава государства'}[g],
+      cls: (g === 'parlMon' || g === 'parlRep') ? 'dim k-gov' : 'hi'},
+    parl:{x:4, y:108, w:122, h:40, t:'Парламент',
+      s: g === 'absMon' ? 'совещательный орган' : {dem:'реальный контроль', hybrid:'«удобное» большинство', auth:'подчинён лидеру', tot:'декоративный'}[r],
+      cls: (g === 'absMon' || r === 'auth' || r === 'tot') ? 'dim' : 'k-gov'},
+    gov:{x:174, y:108, w:122, h:40, t:'Правительство',
+      s:{absMon:'отвечает перед монархом', parlMon:'перед парламентом', presRep:'перед президентом', parlRep:'перед парламентом', mixRep:'перед обоими'}[g], cls:'k-gov'},
+    people:{x:40, y:203, w:220, h:40, t:'Граждане',
+      s: g === 'absMon' ? 'не избирают главу государства' : {dem:'источник власти', hybrid:'голосуют при неравной конкуренции', auth:'ограниченное участие', tot:'мобилизованы и контролируются'}[r],
+      cls: r === 'tot' ? 'alert' : ''}
+  };
+  if (g === 'absMon') nodes.gov.s = 'перед монархом';
+  const E = [];
+  const line = (x1, y1, x2, y2, cls, two) => E.push(`<line class="edge ${cls}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" marker-end="url(#ah)"${two ? ' marker-start="url(#ah)"' : ''}/>`);
+  const lbl = (x, y, lines, m) => E.push(`<text class="lbl${m ? ' m' : ''}" x="${x}" y="${y}" text-anchor="middle">${lines.map((l, i) => `<tspan x="${x}" dy="${i ? 13 : 0}">${esc(l)}</tspan>`).join('')}</text>`);
+  const peopleParl = () => { line(80, 201, 66, 152, elect); lbl(38, 182, ['избирают']); };
+  const peopleHead = () => { line(150, 201, 150, 57, elect); lbl(150, 186, ['избирают']); };
+  const parlGovTwo = (a, b) => { line(128, 128, 172, 128, 'main', true); lbl(150, 119, [a]); lbl(150, 163, [b]); };
+  if (g === 'absMon') {
+    line(200, 55, 228, 105, 'main', true); lbl(262, 72, ['назначает,', 'увольняет']);
+    line(100, 55, 72, 105, 'weak'); lbl(40, 78, ['созывает'], true);
+  } else if (g === 'parlMon') {
+    peopleParl(); parlGovTwo('формирует →', '← отвечает');
+    line(200, 55, 228, 105, 'weak'); lbl(262, 72, ['назначает', 'формально'], true);
+  } else if (g === 'presRep') {
+    peopleParl(); peopleHead();
+    line(200, 55, 228, 105, 'main', true); lbl(262, 72, ['формирует,', 'руководит']);
+    line(100, 55, 72, 105, 'weak', true); lbl(36, 72, ['вето,', 'импичмент'], true);
+  } else if (g === 'parlRep') {
+    peopleParl(); parlGovTwo('формирует →', '← отвечает');
+    line(72, 105, 100, 57, 'main'); lbl(40, 78, ['избирает']);
+  } else if (g === 'mixRep') {
+    peopleParl(); peopleHead();
+    line(200, 55, 228, 105, 'main', true); lbl(262, 72, ['назначает,', 'отвечает']);
+    line(172, 128, 128, 128, 'main'); lbl(150, 163, ['← отвечает']);
+  }
+  const N = Object.entries(nodes).map(([k, n]) => `<g class="node ${n.cls}"><rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="8"/><text class="n-t" x="${n.x + n.w / 2}" y="${n.y + 17}" text-anchor="middle">${esc(n.t)}</text><text class="n-s" x="${n.x + n.w / 2}" y="${n.y + 31}" text-anchor="middle">${esc(n.s)}</text></g>`).join('');
+  $('#svg-gov').innerHTML = `<title id="svg-gov-t">Схема формы правления: ${esc(GOV[g].name)}</title><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><g class="fresh">${E.join('')}${N}</g>`;
+  $('#cap-gov').textContent = '· ' + GOV[g].name.toLowerCase();
+  const electDesc = {dem:['var(--ok)','solid','«избирают»: свободные выборы'], hybrid:['var(--warn)','dashed','«избирают»: неравная конкуренция'], auth:['var(--bad)','dotted','«избирают»: контролируемые выборы'], tot:['var(--lock)','dotted','«избирают»: формальные выборы']}[r];
+  $('#legend-gov').innerHTML = `<span><i style="border-color:var(--gov)"></i>властная связь</span><span><i class="dash grey"></i>формальная или слабая связь</span>` + (g === 'absMon' ? '' : `<span><i style="border-color:${electDesc[0]};border-top-style:${electDesc[1]}"></i>${electDesc[2]}</span>`);
+}
+
+/* ---------- схема «Территория» ---------- */
+function svgTer(){
+  const t = cfg.ter, hard = cfg.reg === 'auth' || cfg.reg === 'tot';
+  const E = [], N = [];
+  const box = (x, y, w, h, title, subs, cls) => N.push(`<g class="node ${cls || ''}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"/><text class="n-t" x="${x + w / 2}" y="${y + 18}" text-anchor="middle">${esc(title)}</text>${subs.map((s, i) => `<text class="n-s" x="${x + w / 2}" y="${y + 32 + i * 12}" text-anchor="middle">${esc(s)}</text>`).join('')}</g>`);
+  const xs = [4, 103, 202];
+  let note;
+  if (t === 'conf') {
+    box(70, 16, 160, 48, 'Общий совет', ['решения — по согласию', 'всех участников'], 'dim k-ter');
+    xs.forEach((x, i) => {
+      E.push(`<line class="edge treaty" x1="${x + 47}" y1="160" x2="${110 + i * 40}" y2="66"/>`);
+      box(x, 160, 94, 58, 'Участник ' + 'АБВ'[i], ['суверенитет', 'своё гражданство'], 'k-ter');
+    });
+    E.push(`<text class="lbl" x="46" y="118" text-anchor="middle">договор</text>`);
+    note = 'каждый участник вправе выйти из союза';
+  } else {
+    const fed = t === 'fed';
+    box(30, 14, 240, 48, fed ? 'Федеральный центр' : 'Центр', fed ? [hard ? 'разграничение лишь на бумаге' : 'полномочия разграничены конституцией'] : ['единые конституция и законы', 'определяет полномочия регионов'], 'k-ter');
+    xs.forEach((x, i) => {
+      const auto = cfg.auto && i === 2;
+      const x2 = x + 47;
+      E.push(`<line class="edge ter${fed && hard ? ' weak' : ''}" x1="${80 + i * 70}" y1="64" x2="${x2}" y2="158" marker-end="url(#ah2)"${fed && !hard ? ' marker-start="url(#ah2)"' : ''}/>`);
+      if (auto) box(x, 160, 94, 58, 'Автономия', ['особый статус', 'без суверенитета'], 'hi');
+      else if (fed) box(x, 160, 94, 58, 'Субъект', ['своя конституция', 'и парламент'], 'k-ter');
+      else box(x, 160, 94, 58, 'Регион', ['нет суверенитета', 'нет своих законов'], '');
+    });
+    note = fed ? (hard ? 'центр фактически контролирует субъекты' : 'два уровня власти на одной территории') : 'единые конституция, законы, гражданство';
+  }
+  $('#svg-ter').innerHTML = `<title id="svg-ter-t">Схема территориального устройства: ${esc(TER[t].name)}</title><defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><g class="fresh">${E.join('')}${N.join('')}<text class="lbl m" x="150" y="240" text-anchor="middle">${esc(note)}</text></g>`;
+  $('#cap-ter').textContent = '· ' + TER[t].name.toLowerCase() + (cfg.auto ? ' с автономией' : '');
+  $('#legend-ter').innerHTML = t === 'conf'
+    ? `<span><i class="dash" style="border-color:var(--ter)"></i>договорная связь, не государственная власть</span>`
+    : t === 'fed' ? `<span><i style="border-color:var(--ter)"></i>⇅ разграничение полномочий: субъекты участвуют в формировании центра</span>${hard ? '<span><i class="dash grey"></i>при этом режиме — номинально</span>' : ''}`
+    : `<span><i style="border-color:var(--ter)"></i>↓ полномочия регионов определяет центр</span>`;
+}
+
+/* ---------- режим ---------- */
+function renderRegime(){
+  const lv = REG_LEVELS[cfg.reg];
+  $('#bars').innerHTML = SPHERES.map((s, i) => `<div class="bar"><span>${s}</span><div class="track" role="meter" aria-valuemin="0" aria-valuemax="4" aria-valuenow="${lv[i]}" aria-label="${s}: ${LEVEL_NAME[lv[i]]}"><div class="fill" style="width:${lv[i] * 25}%"></div><span class="val">${LEVEL_NAME[lv[i]]}</span></div></div>`).join('');
+  $('#chips').innerHTML = REG_CHIPS[cfg.reg].map(([k, v, c]) => `<div class="chip ${c}"><b>${k}</b>${esc(v)}</div>`).join('');
+  $('#cap-reg').textContent = '· ' + REG[cfg.reg].name.toLowerCase() + (cfg.ter === 'conf' ? ' (в государствах-участниках)' : '');
+}
+
+/* ---------- таблица ---------- */
+function renderTable(){
+  const rows = props(cfg);
+  const GRP = {gov:'Форма правления', ter:'Территориальное устройство', reg:'Политический режим'};
+  let last = '', html = '';
+  for (const r of rows) {
+    if (r.grp !== last) { html += `<tr class="grp"><td colspan="3">${GRP[r.grp]}</td></tr>`; last = r.grp; }
+    const ch = changedKeys.has(r.key) ? ' chg' : '';
+    html += `<tr><td class="k">${esc(r.label)}</td><td class="${ch}">${esc(r.law)}</td><td class="${r.law !== r.prac ? 'diff' : ''}${ch}">${esc(r.prac)}</td></tr>`;
+  }
+  $('#props tbody').innerHTML = html;
+  if (changedKeys.size) setTimeout(() => $$('#props td.chg').forEach(td => td.classList.remove('chg')), 1600);
+}
+
+/* ---------- последствия ---------- */
+function renderEffects(){
+  const out = [];
+  if (lastFx.kind === 'lock') {
+    const {v, val, lr} = lastFx;
+    out.push(`<div class="fx bad">${pill('bad', 'Переход невозможен')}<div class="why"><b>Вы попытались выбрать:</b> ${esc(VAR_LABEL[v])} → «${esc(valName(v, val))}».</div>
+      <div class="why"><b>Какое правило нарушено:</b> ${esc(lr.rule)}</div>
+      <div class="why"><b>Почему это кажется возможным:</b> ${esc(lr.plaus)}</div>
+      <div class="why"><b>Определяющее условие:</b> ${esc(lr.key)}</div>
+      <div class="why"><b>Что изменить:</b> ${esc(lr.fix)}</div></div>`);
+  } else if (lastFx.kind === 'change') {
+    const f = lastFx;
+    const list = f.diffs.length ? '<ul>' + f.diffs.map(d => `<li><b>${esc(d.label)}:</b> ${d.law ? `по конституции «${esc(d.law[0])}» → «${esc(d.law[1])}»` : ''}${d.law && d.prac ? '; ' : ''}${d.prac ? `на практике «${esc(d.prac[0])}» → «${esc(d.prac[1])}»` : ''}</li>`).join('') + '</ul>' : '<p>Ни одна строка таблицы не изменилась.</p>';
+    out.push(`<div class="fx">${pill('info', 'Изменение принято')}<div class="why"><b>Условие:</b> ${esc(VAR_LABEL[f.v])}: «${esc(valName(f.v, f.from))}» → «${esc(valName(f.v, f.to))}»</div><div class="why"><b>Результат:</b></div>${list}
+      ${f.locks.length || f.autoOff ? `<div class="why"><b>Допустимые действия:</b></div><ul>${f.autoOff ? '<li>Автономия выключена автоматически: в конфедерации нет единого государства, частью которого она могла бы быть.</li>' : ''}${f.locks.map(l => `<li>${l.on ? 'Стало недоступно' : 'Снова доступно'}: «${esc(l.name)}»</li>`).join('')}</ul>` : ''}
+      <div class="why"><b>Почему:</b> ${esc(VAR_WHY[f.v])}</div></div>`);
+  } else {
+    out.push(`<div class="fx">${pill('info', 'Модель готова')}<div class="why">Выберите другое значение любого элемента. Здесь появится цепочка: что вы изменили, какие признаки изменились, какие действия стали доступны или заблокированы и почему. Начните с маршрута «Этап 1».</div></div>`);
+  }
+  comboNotes(cfg).forEach(n => out.push(`<div class="fx warn">${pill('warn', 'Обратите внимание')}<div class="why">${esc(n)}</div></div>`));
+  $('#effects').innerHTML = out.join('');
+}
+
+/* ---------- маршрут ---------- */
+let route;
+function resetRoute(){ route = {step:0, done:ROUTE.map(() => false), picked:{}, first:{}, caseRes:{}}; }
+resetRoute();
+function maxUnlocked(){ const i = route.done.indexOf(false); return i === -1 ? ROUTE.length - 1 : i; }
+function goStep(i){
+  route.step = i;
+  if (ROUTE[i].preset) applyPreset(ROUTE[i].preset); else renderRoute();
+}
+function reqStatus(st){
+  if (!st.req) return null;
+  return st.req(cfg, flags);
+}
+function renderRoute(){
+  const st = ROUTE[route.step], i = route.step, mu = maxUnlocked();
+  let h = `<div class="sec-head" style="margin:0"><h2>Маршрут</h2><span class="small muted">${route.done.filter(Boolean).length} из ${ROUTE.length}</span></div>`;
+  h += `<div class="steps" role="group" aria-label="Этапы">` + ROUTE.map((s, j) => {
+    const cls = j === i ? 'cur' : route.done[j] ? 'done' : j > mu ? 'lockd' : '';
+    return `<button type="button" class="stepchip ${cls}" data-step="${j}" aria-label="Этап ${j + 1}: ${esc(s.title)}${j > mu ? ' (откроется после предыдущих)' : ''}"${j > mu ? ' aria-disabled="true"' : ''}${j === i ? ' aria-current="step"' : ''}>${j + 1}</button>`;
+  }).join('') + `</div>`;
+  h += `<div class="task"><div class="stage">${esc(st.stage)}</div><h3>${esc(st.title)}</h3>`;
+  if (st.kind === 'case') {
+    h += `<div class="casebox">${esc(st.case)}</div><p class="small">${esc(st.task)}</p>
+      <div class="actions" style="margin:0"><button type="button" class="btn primary" id="case-check">Проверить модель</button></div>`;
+    const cr = route.caseRes[i];
+    if (cr) h += caseReview(i, cr);
+  } else {
+    h += `<p>${esc(st.text)}</p>`;
+    const rs = reqStatus(st);
+    if (st.req) h += `<div class="req">${rs ? pill('ok', 'Условие выполнено') : pill('lock', 'Ещё не выполнено')}<span>${esc(st.reqText)}</span></div>`;
+    if (st.preset) h += `<button type="button" class="btn ghost" id="preset-again">Вернуть модель этапа</button>`;
+    const blocked = st.req && !rs;
+    h += `<p style="font-weight:700">${esc(st.q)}</p><div class="answers">` + st.opts.map((o, k) => {
+      const p = route.picked[i] && route.picked[i].includes(k);
+      return `<button type="button" class="ans ${p ? (o.ok ? 'picked-ok' : 'picked-bad') : ''}" data-ans="${k}"${blocked ? ' aria-disabled="true"' : ''}>${esc(o.t)}</button>`;
+    }).join('') + `</div>`;
+    if (blocked) h += `<p class="small muted">Ответы откроются, когда вы выполните действие в модели: вывод должен опираться на наблюдение.</p>`;
+    const last = route.picked[i] && route.picked[i][route.picked[i].length - 1];
+    if (last != null) {
+      const o = st.opts[last];
+      h += `<div class="fx ${o.ok ? 'ok' : 'bad'}">${pill(o.ok ? 'ok' : 'bad', o.ok ? 'Верно' : 'Неверно')}<div class="why">${esc(o.why)}</div>${o.ok ? '' : '<div class="why small"><b>Что сделать:</b> посмотрите на схему и таблицу ещё раз и выберите другой ответ.</div>'}</div>`;
+    }
+  }
+  h += `<div class="actions" style="margin:0">`;
+  if (i > 0) h += `<button type="button" class="btn" id="step-prev">← Назад</button>`;
+  if (i < ROUTE.length - 1) h += `<button type="button" class="btn ${route.done[i] ? 'primary' : ''}" id="step-next"${route.done[i] ? '' : ' aria-disabled="true"'}>Далее →</button>`;
+  h += `</div>`;
+  if (i < ROUTE.length - 1 && !route.done[i]) h += `<p class="small muted">«Далее» откроется после верного ответа.</p>`;
+  if (i === ROUTE.length - 1 && route.done[i]) h += routeSummary();
+  h += `</div>`;
+  $('#route').innerHTML = h;
+  $$('#route .stepchip').forEach(b => b.addEventListener('click', () => { const j = +b.dataset.step; if (j <= maxUnlocked()) goStep(j); }));
+  $$('#route .ans').forEach(b => b.addEventListener('click', () => {
+    if (b.getAttribute('aria-disabled') === 'true') return;
+    const k = +b.dataset.ans;
+    (route.picked[i] = route.picked[i] || []).push(k);
+    if (!(i in route.first)) route.first[i] = st.opts[k].ok;
+    if (st.opts[k].ok) route.done[i] = true;
+    renderRoute();
+    const nx = $('#step-next'); if (nx && route.done[i]) nx.focus();
+  }));
+  const pa = $('#preset-again'); if (pa) pa.addEventListener('click', () => applyPreset(st.preset));
+  const cc = $('#case-check'); if (cc) cc.addEventListener('click', () => { checkCase(i); renderRoute(); });
+  const pv = $('#step-prev'); if (pv) pv.addEventListener('click', () => goStep(i - 1));
+  const nx = $('#step-next'); if (nx) nx.addEventListener('click', () => { if (route.done[i]) goStep(i + 1); });
+}
+function checkCase(i){
+  const st = ROUTE[i], res = {};
+  for (const v of ['gov','ter','reg','auto']) {
+    const val = cfg[v];
+    const ok = st.answer[v].includes(val);
+    const pref = st.preferred && st.preferred[v];
+    res[v] = {val, ok, alt: ok && pref && val !== pref};
+  }
+  const cr = route.caseRes[i] || (route.caseRes[i] = {first:res, attempts:0});
+  cr.attempts++; cr.last = res;
+  if (Object.values(res).every(r => r.ok)) route.done[i] = true;
+  if (!(i in route.first)) route.first[i] = Object.values(res).every(r => r.ok && !r.alt);
+}
+function correctName(st, v){ return valName(v, (st.preferred && st.preferred[v]) || st.answer[v][0]); }
+function caseReview(i, cr){
+  const st = ROUTE[i], r = cr.last;
+  const allOk = Object.values(r).every(x => x.ok);
+  let h = `<div class="review" aria-live="polite"><div class="rv-h">${allOk ? pill('ok', 'Модель соответствует кейсу') : pill('bad', 'Модель не соответствует кейсу')}<span class="small muted">попытка ${cr.attempts}</span></div>`;
+  for (const v of ['gov','ter','reg','auto']) {
+    const x = r[v];
+    const trap = st.traps[v] && st.traps[v][String(x.val)];
+    const cls = x.ok ? (x.alt ? 'warn' : 'ok') : 'bad';
+    h += `<div class="rv ${cls}"><div class="rv-h">${pill(cls, x.ok ? (x.alt ? 'Допустимо' : 'Верно') : 'Неверно')}${esc(VAR_LABEL[v])}: «${esc(valName(v, x.val))}»</div>
+      <div><b>Определяющие данные:</b> ${esc(st.clues[v])}</div>
+      ${!x.ok ? `<div><b>Почему ваш вариант казался подходящим:</b> ${esc(trap || 'Этот вариант не опирается на данные кейса.')}</div><div><b>Что изменить:</b> ${v === 'auto' ? (st.answer.auto[0] ? 'включите автономию региона' : 'выключите автономию региона') : `выберите «${esc(correctName(st, v))}»`}.</div>` : ''}
+      ${x.alt || (x.ok && v === 'reg' && st.regNote) ? `<div><b>Данных недостаточно для окончательного вывода:</b> ${esc(st.regNote)}</div>` : ''}</div>`;
+  }
+  if (allOk || cr.attempts >= 2) h += finalCaseReview(i, cr);
+  h += `</div>`;
+  return h;
+}
+function finalCaseReview(i, cr){
+  const st = ROUTE[i], f = cr.first;
+  const V = ['gov','ter','reg','auto'];
+  const right = V.filter(v => f[v].ok), wrong = V.filter(v => !f[v].ok);
+  const li = a => a.length ? '<ul>' + a.join('') + '</ul>' : '<p class="muted">—</p>';
+  return `<div class="rv"><div class="rv-h">${pill('info', 'Подробный разбор')} по первой попытке</div>
+    <div><b>Что вы определили правильно:</b></div>${li(right.map(v => `<li>${esc(VAR_LABEL[v])} — «${esc(valName(v, f[v].val))}»</li>`))}
+    <div><b>Какие данные учли:</b></div>${li(right.map(v => `<li>${esc(st.clues[v])}</li>`))}
+    <div><b>Какие данные проигнорировали:</b></div>${li(wrong.map(v => `<li>${esc(st.clues[v])}</li>`))}
+    <div><b>Какие ложные признаки приняли за существенные:</b></div>${li(wrong.map(v => st.traps[v] && st.traps[v][String(f[v].val)] ? `<li>${esc(st.traps[v][String(f[v].val)])}</li>` : '').filter(Boolean))}
+    <div><b>Последовательность:</b> ${cr.attempts === 1 && !wrong.length ? 'решено с первой попытки.' : `модель приведена в соответствие с ${cr.attempts}-й попытки${wrong.length ? `; при первой проверке неверно: ${wrong.map(v => VAR_LABEL[v].toLowerCase()).join(', ')}` : ''}.`}</div>
+    <div><b>Предпочтительное решение:</b> ${esc(correctName(st, 'gov'))} · ${esc(correctName(st, 'ter'))} · ${esc(correctName(st, 'reg'))}${st.answer.auto[0] ? ' · с автономией (особым статусом части территории)' : ''}.</div>
+    ${st.regNote ? `<div><b>Чего не хватает для окончательного вывода о режиме:</b> ${esc(st.regNote)}</div>` : ''}
+    <div><b>При каких изменениях ответ стал бы другим:</b></div><ul>${st.whatif.map(w => `<li>${esc(w)}</li>`).join('')}</ul></div>`;
+}
+function routeSummary(){
+  const firstOk = ROUTE.map((_, j) => route.first[j]).filter(Boolean).length;
+  return `<div class="rv ok"><div class="rv-h">${pill('ok', 'Маршрут пройден')}</div>
+    <div>С первой попытки решено этапов: <b>${firstOk} из ${ROUTE.length}</b>.</div>
+    <ul>${ROUTE.map((s, j) => `<li>${esc(s.stage)}: ${route.first[j] ? 'с первой попытки' : 'после исправления'}</li>`).join('')}</ul>
+    <div class="small">Дальше: проверьте себя без подсказок в режиме «Тренировка».</div></div>`;
+}
+
+function renderLab(){
+  updateControls(); svgGov(); svgTer(); renderRegime(); renderTable(); renderEffects(); renderRoute();
+}
+function resetLab(){
+  cfg = Object.assign({}, DEFAULT_CFG); flags = {triedAbsDem:false}; lastFx = {kind:'init'}; changedKeys = new Set();
+  resetRoute(); renderLab();
+}
+
+/* ================= ТРЕНИРОВКА: общие элементы ================= */
+const V4 = ['gov','ter','auto','reg'];
+const optName = (v, val) => val === NA ? NA_NAME : valName(v, val);
+function trainerHead(title, intro, q){
+  return `<div class="trainer-head"><div><h2 style="font:700 20px var(--f-display)">${esc(title)}</h2><p class="muted small mt8" style="max-width:66ch">${esc(intro)}</p></div>${restartHTML('Начать заново', q)}</div>`;
+}
+function progressRow(state, n, statusOf, label, sumId){
+  const all = state.items.every(it => it.done);
+  return `<div class="progress" role="group" aria-label="${label}">` + state.items.map((it, k) => `<button type="button" class="pdot ${statusOf(it)} ${k === state.i && state.view === 'task' ? 'cur' : ''}" data-go="${k}" aria-label="${label} ${k + 1}">${k + 1}</button>`).join('') +
+    `<button type="button" class="btn ${all ? 'primary' : ''}" id="${sumId}" style="min-height:32px;padding:4px 12px"${all ? '' : ' aria-disabled="true"'}>Итоговый разбор</button></div>` +
+    (all ? '' : `<p class="small muted mt8">Итоговый разбор откроется, когда будут решены все ${n} заданий (решено: ${state.items.filter(i => i.done).length}).</p>`);
+}
+function wireCommon(host, state, rerender, reset, sumId){
+  wireRestart($('.restart', host), reset);
+  $$('.pdot', host).forEach(b => b.addEventListener('click', () => { state.i = +b.dataset.go; state.view = 'task'; rerender(); }));
+  $('#' + sumId).addEventListener('click', () => { if (state.items.every(it => it.done)) { state.view = 'summary'; rerender(); } });
+  const back = $('.to-tasks', host); if (back) back.addEventListener('click', () => { state.view = 'task'; rerender(); });
+  const pv = $('.go-prev', host); if (pv) pv.addEventListener('click', () => { if (state.i > 0) { state.i--; rerender(); } });
+  const nx = $('.go-next', host); if (nx) nx.addEventListener('click', () => { if (state.i < state.items.length - 1) { state.i++; rerender(); } });
+}
+const navBtns = (state) => `<button type="button" class="btn ghost go-prev"${state.i === 0 ? ' aria-disabled="true"' : ''}>← Назад</button><button type="button" class="btn ghost go-next"${state.i === state.items.length - 1 ? ' aria-disabled="true"' : ''}>Далее →</button>`;
+const li = a => a.length ? '<ul>' + a.map(x => `<li>${x}</li>`).join('') + '</ul>' : '<p class="muted">—</p>';
+
+/* ================= ТРЕНИРОВКА 1: определи форму государства ================= */
+let tc;
+const newTC = () => ({i:0, view:'task', items:TR_CASES.map(() => ({pick:{gov:null, ter:null, auto:null, reg:null}, res:null, first:null, attempts:0, done:false}))});
+const TC_OPTS = {
+  gov: [...Object.keys(GOV), NA], ter: Object.keys(TER), auto: [true, false], reg: [...Object.keys(REG), NA]
+};
+const TC_LABEL = {gov:'Форма правления', ter:'Территориальное устройство', auto:'Особый статус части территории (автономия)', reg:'Политический режим'};
+const autoName = val => val ? 'Есть' : 'Нет';
+const tcOptName = (v, val) => v === 'auto' ? autoName(val) : optName(v, val);
+function evalTC(c, pick){
+  const res = {};
+  for (const v of V4) {
+    const val = pick[v];
+    const ok = c.answer[v].includes(val);
+    const pref = c.preferred && c.preferred[v];
+    res[v] = {val, ok, alt: ok && !!pref && val !== pref};
+  }
+  return res;
+}
+function tcStatus(it){
+  if (!it.res) return '';
+  const r = Object.values(it.res);
+  return r.every(x => x.ok) ? (r.some(x => x.alt) ? 's-warn' : 's-ok') : 's-bad';
+}
+function renderTC(){
+  const host = $('#t1');
+  let h = trainerHead('Определи форму государства', 'Прочитайте описание вымышленного государства и определите все элементы его формы. Подсказок до проверки нет. Если данных не хватает для вывода, выберите «Данных недостаточно».', 'Стереть ответы во всех 10 кейсах?');
+  h += progressRow(tc, 10, tcStatus, 'Кейс', 'tc-sum');
+  if (tc.view === 'summary') { h += tcSummary(); host.innerHTML = h; wireCommon(host, tc, renderTC, () => { tc = newTC(); renderTC(); }, 'tc-sum'); return; }
+  const c = TR_CASES[tc.i], it = tc.items[tc.i];
+  const complete = V4.every(v => it.pick[v] !== null);
+  h += `<div class="t-grid mt12"><div class="card"><div class="eyebrow">Кейс ${tc.i + 1} из 10</div><h3 class="mt8" style="font:700 17px var(--f-display)">Государство «${esc(c.name)}»</h3>
+    <div class="casebox mt8">${esc(c.text)}</div>
+    <div class="ctrl-groups mt12">${V4.map(v => `<div class="ctrl" role="group" aria-labelledby="tc-l-${v}"><div class="ctrl-label" id="tc-l-${v}"><span class="dot ${v === 'auto' ? 'ter' : v}"></span>${TC_LABEL[v]}</div><div class="seg">${TC_OPTS[v].map(o => `<button type="button" class="opt" data-tv="${v}" data-tval="${o}" aria-pressed="${it.pick[v] === o}">${esc(tcOptName(v, o))}</button>`).join('')}</div></div>`).join('')}</div>
+    <div class="actions"><button type="button" class="btn primary" id="tc-check"${complete ? '' : ' aria-disabled="true"'}>Проверить</button>${navBtns(tc)}</div>
+    ${complete ? '' : '<p class="small muted mt8">Проверка станет доступна, когда вы выберете значение для всех четырёх элементов.</p>'}
+    ${it.attempts ? `<p class="small muted mt8">Попыток: ${it.attempts}. В итоговый разбор идёт первая попытка.</p>` : ''}</div>
+    <div class="fb-list" aria-live="polite">${it.res ? tcFeedback(c, it) : `<div class="fb"><div class="fb-h">${pill('info', 'Как работать')}</div><p>Для каждого элемента найдите в тексте определяющие данные: <b>кто и перед кем отвечает</b> (форма правления), <b>есть ли у частей собственные конституции и суверенитет</b> (устройство), <b>как реально работают выборы, оппозиция, СМИ и суд</b> (режим). Названия («республики», «провинции», «король») — не доказательство.</p></div>`}</div></div>`;
+  host.innerHTML = h;
+  wireCommon(host, tc, renderTC, () => { tc = newTC(); renderTC(); }, 'tc-sum');
+  $$('.opt[data-tv]', host).forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.tv, raw = b.dataset.tval;
+    it.pick[v] = v === 'auto' ? raw === 'true' : raw;
+    renderTC();
+  }));
+  $('#tc-check').addEventListener('click', () => {
+    if (!V4.every(v => it.pick[v] !== null)) return;
+    it.res = evalTC(c, it.pick);
+    if (!it.attempts) it.first = it.res;
+    it.attempts++;
+    if (Object.values(it.res).every(x => x.ok)) it.done = true;
+    if (it.attempts >= 2) it.done = true;
+    renderTC();
+    if (window.innerWidth < 900) $('#t1 .fb-list').scrollIntoView({block:'nearest'});
+  });
+}
+function correctTC(c, v){ const val = (c.preferred && c.preferred[v]) || c.answer[v][0]; return tcOptName(v, val); }
+function tcFeedback(c, it){
+  const r = it.res, allOk = Object.values(r).every(x => x.ok);
+  let h = `<div class="fb ${allOk ? 'ok' : 'bad'}"><div class="fb-h">${pill(allOk ? 'ok' : 'bad', allOk ? 'Верно' : 'Есть ошибки')}<span>попытка ${it.attempts}</span></div>${allOk ? '' : '<p>Исправьте отмеченные элементы и проверьте снова.' + (it.attempts >= 2 ? ' Кейс засчитан в итог по первой попытке.' : '') + '</p>'}</div>`;
+  for (const v of V4) {
+    const x = r[v], cls = x.ok ? (x.alt ? 'warn' : 'ok') : 'bad';
+    const trap = c.traps[v] && c.traps[v][String(x.val)];
+    h += `<div class="fb ${cls}"><div class="fb-h">${pill(cls, x.ok ? (x.alt ? 'Допустимо' : 'Верно') : 'Неверно')}${esc(TC_LABEL[v])}: «${esc(tcOptName(v, x.val))}»</div><dl>
+      <dt>Определяющие данные</dt><dd>${esc(c.clues[v])}</dd>
+      ${!x.ok ? `<dt>Почему ваш вариант кажется подходящим</dt><dd>${esc(trap || (x.val === NA ? 'Осторожность уместна, но здесь данных достаточно: определяющие сведения есть в тексте.' : 'Этот вариант не опирается на данные кейса.'))}</dd><dt>Что изменить</dt><dd>Выберите «${esc(correctTC(c, v))}».</dd>` : ''}
+      ${x.ok && x.val === NA && c.missing ? `<dt>Почему вывод невозможен</dt><dd>${esc(c.missing)}</dd>` : ''}
+      ${(x.alt || (x.ok && c.preferred && c.preferred[v])) && c.altNote ? `<dt>Пограничный случай</dt><dd>${esc(c.altNote)}</dd>` : ''}
+    </dl></div>`;
+  }
+  if (allOk || it.attempts >= 2) h += `<div class="fb"><dl><dt>Предпочтительное решение</dt><dd>${V4.map(v => `${esc(TC_LABEL[v])}: ${esc(correctTC(c, v))}`).join(' · ')}</dd><dt>Если бы условия изменились</dt><dd>${esc(c.whatif)}</dd></dl></div>`;
+  return h;
+}
+function tcSummary(){
+  const byV = {}; V4.forEach(v => byV[v] = {n:0, ok:0});
+  const used = [], ignored = [], falseCl = [], naRight = [], naMissed = [], naWrong = [];
+  tc.items.forEach((it, k) => {
+    const c = TR_CASES[k];
+    V4.forEach(v => {
+      const x = it.first[v];
+      byV[v].n++;
+      if (x.ok) { byV[v].ok++; }
+      else {
+        ignored.push(`«${esc(c.name)}», ${esc(TC_LABEL[v].toLowerCase())}: ${esc(c.clues[v])}`);
+        const t = c.traps[v] && c.traps[v][String(x.val)];
+        if (t) falseCl.push(`«${esc(c.name)}»: ${esc(t)}`);
+      }
+      if (c.answer[v].includes(NA) && !c.preferred) { if (x.val === NA) naRight.push(`«${esc(c.name)}», ${esc(TC_LABEL[v].toLowerCase())}`); else naMissed.push(`«${esc(c.name)}», ${esc(TC_LABEL[v].toLowerCase())}: вы выбрали «${esc(tcOptName(v, x.val))}», хотя данных не было`); }
+      else if (x.val === NA && !x.ok) naWrong.push(`«${esc(c.name)}», ${esc(TC_LABEL[v].toLowerCase())}`);
+    });
+    const allOk = V4.every(v => it.first[v].ok);
+    if (allOk) used.push(`«${esc(c.name)}» — все элементы определены верно`);
+  });
+  const firstAll = tc.items.filter(it => V4.every(v => it.first[v].ok)).length;
+  return `<div class="card mt12"><h2>Итоговый разбор · первая попытка</h2>
+    <div class="summary-grid mt12"><div class="kpi"><b>${firstAll} / 10</b><span>кейсов решено полностью верно</span></div>${V4.map(v => `<div class="kpi"><b>${byV[v].ok} / ${byV[v].n}</b><span>${esc(TC_LABEL[v].toLowerCase())}</span></div>`).join('')}</div>
+    <div class="review mt12">
+    <div class="rv ok"><div class="rv-h">Что вы определили правильно</div>${li(used)}</div>
+    <div class="rv ${ignored.length ? 'bad' : 'ok'}"><div class="rv-h">Какие данные вы проигнорировали</div>${li(ignored)}</div>
+    <div class="rv ${falseCl.length ? 'bad' : 'ok'}"><div class="rv-h">Какие ложные признаки приняли за существенные</div>${li(falseCl)}</div>
+    <div class="rv ${naMissed.length || naWrong.length ? 'warn' : 'ok'}"><div class="rv-h">Работа с недостатком данных</div>
+      <div>Верно отмечено «данных недостаточно»:</div>${li(naRight)}
+      <div>Вывод сделан без данных:</div>${li(naMissed)}
+      <div>«Данных недостаточно» там, где данные были:</div>${li(naWrong)}</div>
+    <div class="rv"><div class="rv-h">Предпочтительные решения и что изменило бы ответ</div><ol>${TR_CASES.map(c => `<li><b>«${esc(c.name)}»:</b> ${V4.map(v => esc(correctTC(c, v))).join(' · ')}<br><span class="small">${esc(c.whatif)}</span></li>`).join('')}</ol></div>
+    </div><div class="actions"><button type="button" class="btn to-tasks">← Вернуться к кейсам</button></div></div>`;
+}
+
+/* ================= ТРЕНИРОВКА 2: мифы и ловушки ================= */
+let tm;
+const newTM = () => ({i:0, view:'task', items:MYTHS.map(() => ({pick:null, first:null, attempts:0, done:false}))});
+const EL_LABEL = {gov:'форма правления', ter:'территориальное устройство', reg:'политический режим', link:'связь элементов'};
+function tmStatus(it){ return it.first == null ? '' : it.first === MYTHS[tm.items.indexOf(it)].a ? 's-ok' : 's-bad'; }
+function renderTM(){
+  const host = $('#t2');
+  let h = trainerHead('Мифы и ловушки', 'Оцените утверждение: верно, неверно или зависит от условий. После ответа появится разбор: какое правило работает, почему ошибка правдоподобна и какое условие решающее.', 'Стереть ответы на все 12 утверждений?');
+  h += progressRow(tm, 12, tmStatus, 'Утверждение', 'tm-sum');
+  if (tm.view === 'summary') { h += tmSummary(); host.innerHTML = h; wireCommon(host, tm, renderTM, () => { tm = newTM(); renderTM(); }, 'tm-sum'); return; }
+  const m = MYTHS[tm.i], it = tm.items[tm.i];
+  h += `<div class="t-grid mt12"><div class="card"><div class="eyebrow">Утверждение ${tm.i + 1} из 12 · ${esc(EL_LABEL[m.el])}</div>
+    <p class="thesis mt12">${esc(m.s)}</p>
+    <div class="seg mt12" role="group" aria-label="Ваш ответ">${VERDICTS.map(([k, n]) => `<button type="button" class="opt" data-verdict="${k}" aria-pressed="${it.pick === k}">${n}</button>`).join('')}</div>
+    <div class="actions">${navBtns(tm)}</div></div>
+    <div class="fb-list" aria-live="polite">${it.pick ? tmFeedback(m, it) : `<div class="fb"><div class="fb-h">${pill('info', 'Подумайте')}</div><p>Какой элемент формы государства затронут? Определяет ли он то, о чём говорится в утверждении?</p></div>`}</div></div>`;
+  host.innerHTML = h;
+  wireCommon(host, tm, renderTM, () => { tm = newTM(); renderTM(); }, 'tm-sum');
+  $$('.opt[data-verdict]', host).forEach(b => b.addEventListener('click', () => {
+    it.pick = b.dataset.verdict;
+    if (it.first == null) it.first = it.pick;
+    it.attempts++;
+    it.done = true;
+    renderTM();
+  }));
+}
+function tmFeedback(m, it){
+  const ok = it.pick === m.a;
+  const vn = k => VERDICTS.find(x => x[0] === k)[1];
+  return `<div class="fb ${ok ? 'ok' : 'bad'}"><div class="fb-h">${pill(ok ? 'ok' : 'bad', ok ? 'Верно' : 'Неверно')}<span>Правильный ответ: «${esc(vn(m.a))}»</span></div><dl>
+    <dt>${ok ? 'Почему это так' : 'Какое правило нарушено'}</dt><dd>${esc(m.rule)}</dd>
+    <dt>Почему ${ok ? 'ошибиться легко' : 'ваш ответ кажется правдоподобным'}</dt><dd>${esc(m.plaus)}</dd>
+    <dt>Определяющее условие</dt><dd>${esc(m.key)}</dd>
+    <dt>Пример</dt><dd>${esc(m.ex)}</dd></dl></div>`;
+}
+function tmSummary(){
+  const ok = tm.items.filter((it, k) => it.first === MYTHS[k].a).length;
+  const byEl = {};
+  const wrong = [];
+  tm.items.forEach((it, k) => {
+    const m = MYTHS[k];
+    byEl[m.el] = byEl[m.el] || {n:0, ok:0}; byEl[m.el].n++;
+    if (it.first === m.a) byEl[m.el].ok++; else wrong.push(`<b>${esc(m.s)}</b> — ${esc(m.rule)} <i>Ложный признак:</i> ${esc(m.plaus)}`);
+  });
+  return `<div class="card mt12"><h2>Итоговый разбор · первый ответ</h2>
+    <div class="summary-grid mt12"><div class="kpi"><b>${ok} / 12</b><span>верных ответов</span></div>${Object.entries(byEl).map(([e, v]) => `<div class="kpi"><b>${v.ok} / ${v.n}</b><span>${esc(EL_LABEL[e])}</span></div>`).join('')}</div>
+    <div class="review mt12">
+    <div class="rv ${wrong.length ? 'bad' : 'ok'}"><div class="rv-h">Заблуждения, которые вы приняли за правило</div>${li(wrong)}</div>
+    <div class="rv"><div class="rv-h">Общий вывод</div><p>Почти все ловушки устроены одинаково: признак одного элемента формы государства принимается за признак другого. Монархия ничего не говорит о режиме, размер страны — об устройстве, наличие выборов — о демократии. Проверяйте, к какому из трёх вопросов относится признак: кто правит, как распределены полномочия или как осуществляется власть.</p></div>
+    </div><div class="actions"><button type="button" class="btn to-tasks">← Вернуться к утверждениям</button></div></div>`;
+}
+
+/* ================= ТРЕНИРОВКА 3: предскажи последствия ================= */
+let tp;
+const ROW_KEYS = props(DEFAULT_CFG).map(r => ({key:r.key, label:r.label, grp:r.grp}));
+const newTP = () => ({i:0, view:'task', items:PREDICT.map(() => ({sel:new Set(), res:null, first:null, attempts:0, done:false}))});
+function predictAnswer(p){
+  const before = props(p.from), to = Object.assign({}, p.from, {[p.v]: p.to});
+  if (p.v === 'ter' && p.to === 'conf') to.auto = false;
+  const after = props(to);
+  const changed = new Set();
+  after.forEach((r, k) => { if (r.law !== before[k].law || r.prac !== before[k].prac) changed.add(r.key); });
+  return {before, after, changed, to};
+}
+function cfgLine(c){ return `${GOV[c.gov].name} · ${TER[c.ter].name.toLowerCase()}${c.auto ? ' с автономией' : ''} · ${REG[c.reg].name.toLowerCase()}`; }
+function tpStatus(it){ if (!it.first) return ''; return it.first.miss === 0 && it.first.extra === 0 ? 's-ok' : it.first.hit > 0 ? 's-warn' : 's-bad'; }
+function renderTP(){
+  const host = $('#t3');
+  let h = trainerHead('Предскажи последствия', 'Государство меняет один элемент формы. Отметьте признаки, которые изменятся — по конституции или на практике. Затем сверьтесь с моделью лаборатории.', 'Стереть ответы во всех 8 заданиях?');
+  h += progressRow(tp, 8, tpStatus, 'Задание', 'tp-sum');
+  if (tp.view === 'summary') { h += tpSummary(); host.innerHTML = h; wireCommon(host, tp, renderTP, () => { tp = newTP(); renderTP(); }, 'tp-sum'); return; }
+  const p = PREDICT[tp.i], it = tp.items[tp.i];
+  const GRP = {gov:'Форма правления', ter:'Территориальное устройство', reg:'Политический режим'};
+  const ans = it.res ? predictAnswer(p) : null;
+  h += `<div class="t-grid mt12"><div class="card"><div class="eyebrow">Задание ${tp.i + 1} из 8</div>
+    <div class="casebox mt8"><b>Было:</b> ${esc(cfgLine(p.from))}<br><b>Изменение:</b> ${esc(VAR_LABEL[p.v])}: «${esc(valName(p.v, p.from[p.v]))}» → «${esc(valName(p.v, p.to))}»</div>
+    <p class="mt12" style="font-weight:700">Какие признаки изменятся?</p>
+    <div class="stack mt8" style="gap:10px">${['gov','ter','reg'].map(g => `<div><div class="eyebrow" style="margin-bottom:6px">${GRP[g]}</div><div class="seg">${ROW_KEYS.filter(r => r.grp === g).map(r => {
+      let cls = '';
+      if (ans) { const ch = ans.changed.has(r.key), s = it.sel.has(r.key); cls = ch && s ? 'hit' : ch ? 'miss' : s ? 'extra' : ''; }
+      return `<button type="button" class="opt pr ${cls}" data-row="${r.key}" aria-pressed="${it.sel.has(r.key)}">${esc(r.label)}</button>`;
+    }).join('')}</div></div>`).join('')}</div>
+    <div class="actions"><button type="button" class="btn primary" id="tp-check">Проверить прогноз</button>${navBtns(tp)}</div>
+    ${ans ? '<p class="small muted mt8">Зелёная рамка — угадали, красная пунктирная — пропустили, красная сплошная — лишнее.</p>' : ''}
+    ${it.attempts ? `<p class="small muted mt8">Попыток: ${it.attempts}. В итог идёт первая попытка.</p>` : ''}</div>
+    <div class="fb-list" aria-live="polite">${ans ? tpFeedback(p, it, ans) : `<div class="fb"><div class="fb-h">${pill('info', 'Подсказка о методе')}</div><p>Спросите себя: на какой вопрос отвечает изменённый элемент? Форма правления и устройство меняют конституционную схему. Режим меняет то, как схема работает на практике, — во всех разделах сразу.</p></div>`}</div></div>`;
+  host.innerHTML = h;
+  wireCommon(host, tp, renderTP, () => { tp = newTP(); renderTP(); }, 'tp-sum');
+  $$('.opt[data-row]', host).forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.row; it.sel.has(k) ? it.sel.delete(k) : it.sel.add(k);
+    if (it.res) it.res = null;
+    renderTP();
+  }));
+  $('#tp-check').addEventListener('click', () => {
+    const a = predictAnswer(p);
+    let hit = 0, miss = 0, extra = 0;
+    ROW_KEYS.forEach(r => { const ch = a.changed.has(r.key), s = it.sel.has(r.key); if (ch && s) hit++; else if (ch) miss++; else if (s) extra++; });
+    it.res = {hit, miss, extra};
+    if (!it.attempts) it.first = Object.assign({missKeys:ROW_KEYS.filter(r => a.changed.has(r.key) && !it.sel.has(r.key)).map(r => r.key), extraKeys:ROW_KEYS.filter(r => !a.changed.has(r.key) && it.sel.has(r.key)).map(r => r.key)}, it.res);
+    it.attempts++; it.done = true;
+    renderTP();
+    if (window.innerWidth < 900) $('#t3 .fb-list').scrollIntoView({block:'nearest'});
+  });
+}
+function rowWhy(p, key, changed){
+  const r = ROW_KEYS.find(x => x.key === key);
+  if (changed) {
+    if (r.grp === p.v || (p.v === 'auto' && r.grp === 'ter')) return 'Этот признак напрямую задаётся изменённым элементом.';
+    if (p.v === 'reg') return 'Режим не меняет конституционную схему, но меняет то, как она работает на практике, — поэтому сдвигается колонка «На практике» и в этом разделе.';
+    if (p.v === 'gov' && r.key === 'head') return 'Способ получения власти главой государства — часть формы правления.';
+    return 'Признак зависит от сочетания элементов: изменённый элемент меняет его практическое значение.';
+  }
+  if (p.v === 'reg' && r.grp !== 'reg') return 'При этом сочетании практика этого признака не зависит от смены режима.';
+  if (r.grp !== p.v && !(p.v === 'auto' && r.grp === 'ter')) return `Признак относится к элементу «${({gov:'форма правления', ter:'территориальное устройство', reg:'политический режим'})[r.grp]}», который не менялся.`;
+  return 'При этом изменении значение признака остаётся прежним.';
+}
+function tpFeedback(p, it, a){
+  const {hit, miss, extra} = it.res;
+  const allOk = !miss && !extra;
+  let h = `<div class="fb ${allOk ? 'ok' : 'bad'}"><div class="fb-h">${pill(allOk ? 'ok' : miss && !hit ? 'bad' : 'warn', allOk ? 'Прогноз верен' : 'Прогноз неточен')}<span>угадано ${hit} из ${a.changed.size}; пропущено ${miss}; лишних ${extra}</span></div><p><b>Почему:</b> ${esc(VAR_WHY[p.v])}</p></div>`;
+  a.after.forEach((r, k) => {
+    const b = a.before[k], ch = a.changed.has(r.key), s = it.sel.has(r.key);
+    if (!ch && !s) return;
+    const st = ch && s ? 'ok' : 'bad';
+    const lab = ch && s ? 'Угадано' : ch ? 'Пропущено' : 'Не меняется';
+    const vals = ch ? `${b.law !== r.law ? `по конституции: «${esc(b.law)}» → «${esc(r.law)}»` : ''}${b.law !== r.law && b.prac !== r.prac ? '<br>' : ''}${b.prac !== r.prac ? `на практике: «${esc(b.prac)}» → «${esc(r.prac)}»` : ''}` : `остаётся «${esc(r.prac)}»`;
+    h += `<div class="fb ${st}"><div class="fb-h">${pill(st, lab)}${esc(r.label)}</div><p>${vals}</p><p class="small">${esc(rowWhy(p, r.key, ch))}</p></div>`;
+  });
+  return h;
+}
+function tpSummary(){
+  let hit = 0, miss = 0, extra = 0, total = 0;
+  const missCount = {}, extraCount = {};
+  tp.items.forEach((it, k) => {
+    const a = predictAnswer(PREDICT[k]); total += a.changed.size;
+    hit += it.first.hit; miss += it.first.miss; extra += it.first.extra;
+    it.first.missKeys.forEach(x => missCount[x] = (missCount[x] || 0) + 1);
+    it.first.extraKeys.forEach(x => extraCount[x] = (extraCount[x] || 0) + 1);
+  });
+  const lab = k => esc(ROW_KEYS.find(r => r.key === k).label);
+  const regTasks = PREDICT.map((p, k) => ({p, k})).filter(x => x.p.v === 'reg');
+  const regMiss = regTasks.reduce((s, x) => s + tp.items[x.k].first.miss, 0);
+  return `<div class="card mt12"><h2>Итоговый разбор · первая попытка</h2>
+    <div class="summary-grid mt12"><div class="kpi"><b>${hit} / ${total}</b><span>изменений предсказано</span></div><div class="kpi"><b>${miss}</b><span>изменений пропущено</span></div><div class="kpi"><b>${extra}</b><span>лишних прогнозов</span></div></div>
+    <div class="review mt12">
+    <div class="rv ${Object.keys(missCount).length ? 'bad' : 'ok'}"><div class="rv-h">Что вы проигнорировали чаще всего</div>${li(Object.entries(missCount).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${lab(k)} — ${n} раз`))}</div>
+    <div class="rv ${Object.keys(extraCount).length ? 'bad' : 'ok'}"><div class="rv-h">Какие связи вы приписали модели напрасно</div>${li(Object.entries(extraCount).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${lab(k)} — ${n} раз`))}</div>
+    <div class="rv ${regMiss ? 'warn' : 'ok'}"><div class="rv-h">Режим и практика</div><p>${regMiss ? `В заданиях со сменой режима пропущено изменений: ${regMiss}. ` : ''}Смена режима не трогает конституцию, но меняет практику во всех разделах: кто реально формирует правительство, работает ли вотум недоверия, самостоятельны ли субъекты.</p></div>
+    <div class="rv"><div class="rv-h">Главные зависимости</div><ul><li>Форма правления меняет связи между главой государства, парламентом и правительством — и больше ничего.</li><li>Устройство меняет законодательство, гражданство и право выхода частей, но не то, кто правит в центре.</li><li>Автономия меняет статус одной части, а не тип устройства.</li><li>Режим меняет колонку «На практике» во всех разделах. При авторитарном режиме смена формы правления почти не меняет практику.</li></ul></div>
+    </div><div class="actions"><button type="button" class="btn to-tasks">← Вернуться к заданиям</button></div></div>`;
+}
+
+/* ================= ЗАПУСК ================= */
+function init(){
+  buildControls();
+  wireRestart($('#lab .restart'), resetLab);
+  applyPreset(ROUTE[0].preset);
+  lastFx = {kind:'init'};
+  renderEffects();
+  tc = newTC(); tm = newTM(); tp = newTP();
+  renderTC(); renderTM(); renderTP();
+  tablist([$('#tab-lab'), $('#tab-train')], [$('#lab'), $('#train')]);
+  tablist([$('#st-1'), $('#st-2'), $('#st-3')], [$('#t1'), $('#t2'), $('#t3')]);
+}
+init();
+
+</script>
+</body>
+</html>
